@@ -1,69 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-           prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-        <Label alignment="CENTER" text="Аудитории" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-               AnchorPane.topAnchor="0.0">
-            <font>
-                <Font size="24.0"/>
-            </font>
-        </Label>
-        <ToolBar layoutX="163.0" layoutY="194.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0"
-                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
-            <TextField prefHeight="31.0" prefWidth="205.0" promptText="Наименование аудитории"/>
-            <Button mnemonicParsing="false" text="Добавить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-            <Button mnemonicParsing="false" text="Изменить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-            <Button mnemonicParsing="false" text="Удалить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-        </ToolBar>
-        <ListView layoutX="174.0" layoutY="170.0" prefHeight="200.0" prefWidth="200.0"
-                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="84.0"/>
-    </AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-        <Label alignment="CENTER" text="Предметы" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-               AnchorPane.topAnchor="0.0">
-            <font>
-                <Font size="24.0"/>
-            </font>
-        </Label>
-        <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                 AnchorPane.topAnchor="40.0">
-            <TextField prefHeight="31.0" prefWidth="205.0" promptText="Наименование предмета"/>
-            <Button mnemonicParsing="false" text="Добавить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-            <Button mnemonicParsing="false" text="Изменить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-            <Button mnemonicParsing="false" text="Удалить">
-                <cursor>
-                    <Cursor fx:constant="HAND"/>
-                </cursor>
-            </Button>
-        </ToolBar>
-        <ListView layoutX="123.0" layoutY="178.0" prefHeight="200.0" prefWidth="200.0"
-                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="84.0"/>
-    </AnchorPane>
+
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.greenstudio.urioschedulefx.view.LessonsAndCabsController">
+   <items>
+       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+              <Label alignment="CENTER" text="Аудитории" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <font>
+                      <Font size="24.0" />
+                  </font>
+              </Label>
+              <ToolBar layoutX="163.0" layoutY="194.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                 <items>
+                     <TextField fx:id="textCab" prefHeight="31.0" prefWidth="205.0" promptText="Наименование аудитории" />
+                     <Button mnemonicParsing="false" text="Добавить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                     <Button mnemonicParsing="false" text="Изменить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                     <Button mnemonicParsing="false" text="Удалить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                 </items>
+              </ToolBar>
+              <ListView fx:id="cabListView" layoutX="174.0" layoutY="170.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="84.0" />
+          </children>
+       </AnchorPane>
+       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+              <Label alignment="CENTER" text="Предметы" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <font>
+                      <Font size="24.0" />
+                  </font>
+              </Label>
+              <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                 <items>
+                     <TextField fx:id="textLesson" prefHeight="31.0" prefWidth="205.0" promptText="Наименование предмета" />
+                     <Button mnemonicParsing="false" onAction="#handleAddLesson" text="Добавить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                     <Button mnemonicParsing="false" onAction="#handleEditPerson" text="Изменить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                     <Button mnemonicParsing="false" onAction="#handleDeleteLesson" text="Удалить">
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Button>
+                 </items>
+              </ToolBar>
+              <ListView fx:id="lessonListView" layoutX="123.0" layoutY="178.0" onMouseClicked="#handleClickListViewLessons" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="84.0" />
+          </children>
+       </AnchorPane>
+   </items>
 </SplitPane>

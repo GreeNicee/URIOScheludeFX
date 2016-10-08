@@ -1,6 +1,7 @@
 package ru.greenstudio.urioschedulefx;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -11,6 +12,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import ru.greenstudio.urioschedulefx.model.Lesson;
+import ru.greenstudio.urioschedulefx.view.LessonsAndCabsController;
 
 import java.io.IOException;
 
@@ -19,8 +22,31 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
+    /**
+     * Данные, в виде наблюдаемого списка адресатов.
+     */
+    private ObservableList<String> lessonData = FXCollections.observableArrayList();
+
+    /**
+     * Конструктор
+     */
     public MainApp() {
+        // В качестве образца добавляем некоторые данные
+        lessonData.add(new Lesson("Вася").getName());
+        lessonData.add(new Lesson("Володя").getName());
+        lessonData.add(new Lesson("Режий").getName());
+        lessonData.add(new Lesson("Валера").getName());
+        lessonData.add(new Lesson("Валера").getName());
+        lessonData.add(new Lesson("Эмили").getName());
+        lessonData.add(new Lesson("Джон").getName());
+        lessonData.add(new Lesson("Бъерн").getName());
+        lessonData.add(new Lesson("Последний").getName());
     }
+
+    public ObservableList<String> getLessonData() {
+        return lessonData;
+    }
+
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -77,14 +103,17 @@ public class MainApp extends Application {
                     }
                 }
             }
+            // Даём контроллеру доступ к главному приложению.
+            LessonsAndCabsController controller = loader.getController();
+            controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-//    public Stage getPrimaryStage() {
-//        return primaryStage;
-//    }
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
 
     public static void main(String[] args) {
         launch(args);
