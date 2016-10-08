@@ -32,12 +32,12 @@ public class MainApp extends Application {
         showLessonsAndCabs();
     }
 
-    public void initRootLayout() {
+    private void initRootLayout() {
         try {
             // Загружаем корневой макет из fxml файла.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            rootLayout = loader.load();
 
             // Отображаем сцену, содержащую корневой макет.
             Scene scene = new Scene(rootLayout);
@@ -49,31 +49,30 @@ public class MainApp extends Application {
         }
     }
 
-    public void showLessonsAndCabs() {
+    private void showLessonsAndCabs() {
         try {
             // Load person overview.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/LessonsAndCabsLayout.fxml"));
-            SplitPane lessAndCabs = (SplitPane) loader.load();
+            SplitPane lessAndCabs = loader.load();
 
             // Set person overview into the center of root layout.
             for (int i = 0; i < rootLayout.getChildren().size(); i++) {
                 ObservableList<Node> rootChilds = rootLayout.getChildren();
                 if (rootChilds.get(i) instanceof TabPane) {
                     ObservableList<Tab> rootTabs = ((TabPane) rootChilds.get(i)).getTabs();
-                    for (int j = 0; j < rootTabs.size(); j++) {
+                    for (Tab rootTab : rootTabs) {
                         String tabId = "";
-                        Tab tab = (Tab) rootTabs.get(j);
-                        if (rootTabs.get(j).getId() != null)
-                            tabId = rootTabs.get(j).getId();
+                        if (rootTab.getId() != null)
+                            tabId = rootTab.getId();
                         if (tabId.equals("tabLessonsAndCabs")) {
-                            AnchorPane anchorPane = (AnchorPane) tab.getContent();
+                            AnchorPane anchorPane = (AnchorPane) rootTab.getContent();
                             anchorPane.getChildren().add(lessAndCabs);
 
-                            anchorPane.setTopAnchor(lessAndCabs, 0.0);
-                            anchorPane.setBottomAnchor(lessAndCabs, 0.0);
-                            anchorPane.setLeftAnchor(lessAndCabs, 0.0);
-                            anchorPane.setRightAnchor(lessAndCabs, 0.0);
+                            AnchorPane.setTopAnchor(lessAndCabs, 0.0);
+                            AnchorPane.setBottomAnchor(lessAndCabs, 0.0);
+                            AnchorPane.setLeftAnchor(lessAndCabs, 0.0);
+                            AnchorPane.setRightAnchor(lessAndCabs, 0.0);
                         }
                     }
                 }
@@ -83,9 +82,9 @@ public class MainApp extends Application {
         }
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
+//    public Stage getPrimaryStage() {
+//        return primaryStage;
+//    }
 
     public static void main(String[] args) {
         launch(args);
