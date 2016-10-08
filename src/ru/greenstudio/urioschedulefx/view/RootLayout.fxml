@@ -1,59 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
-            prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Close"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
-                    </items>
-                </Menu>
-            </menus>
+           <menus>
+               <Menu mnemonicParsing="false" text="Файл">
+                  <items>
+                      <Menu mnemonicParsing="false" text="Расписание">
+                         <items>
+                             <MenuItem mnemonicParsing="false" text="Открыть" />
+                             <MenuItem mnemonicParsing="false" text="Сохранить" />
+                             <MenuItem mnemonicParsing="false" text="Сохранить как" />
+                         </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Экспорт">
+                         <items>
+                             <Menu mnemonicParsing="false" text="Word">
+                                <items>
+                                    <MenuItem mnemonicParsing="false" text="Для аудиторного фонда" />
+                                    <MenuItem mnemonicParsing="false" text="Для преподавателей" />
+                                    <MenuItem mnemonicParsing="false" text="Для студентов" />
+                                    <MenuItem mnemonicParsing="false" text="Для всех (3 файла)" />
+                                </items>
+                             </Menu>
+                             <Menu mnemonicParsing="false" text="Excel">
+                                <items>
+                                    <MenuItem mnemonicParsing="false" text="Для аудиторного фонда" />
+                                    <MenuItem mnemonicParsing="false" text="Для преподавателей" />
+                                    <MenuItem mnemonicParsing="false" text="Для студентов" />
+                                    <MenuItem mnemonicParsing="false" text="Для всех (3 файла)" />
+                                </items>
+                             </Menu>
+                         </items>
+                      </Menu>
+                  </items>
+               </Menu>
+               <Menu mnemonicParsing="false" text="Справка">
+                  <items>
+                      <MenuItem mnemonicParsing="false" text="О программе" />
+                      <MenuItem mnemonicParsing="false" text="Об авторе" />
+                  </items>
+               </Menu>
+               <Menu mnemonicParsing="false" text="Выход" />
+           </menus>
         </MenuBar>
     </top>
     <center>
         <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <tabs>
-                <Tab text="Расписание">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-                <Tab text="Преподаватели">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-                <Tab text="Группы">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-                <Tab text="Предметы и аудитории">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-                <Tab text="Расписание звонков">
-                    <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
-                    </content>
-                </Tab>
-            </tabs>
+           <tabs>
+               <Tab text="Расписание">
+                  <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+               </Tab>
+               <Tab text="Преподаватели">
+                  <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+               </Tab>
+               <Tab text="Группы">
+                  <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+               </Tab>
+               <Tab fx:id="tabLessonsAndCabs" text="Предметы и аудитории">
+                  <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+               </Tab>
+               <Tab text="Расписание звонков">
+                  <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+               </Tab>
+           </tabs>
         </TabPane>
     </center>
 </BorderPane>
