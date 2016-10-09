@@ -1,28 +1,23 @@
 package ru.greenstudio.urioschedulefx.Utils;
 
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
-import javax.swing.*;
-import java.util.Observable;
-
 public class IsInputOk {
-    enum TextFieldType{STANDARD,NUMERIC}
+    enum TextFieldType {STANDARD, NUMERIC}
 
-    public static boolean isTextFieldOk(TextField textField){
+    public static boolean isTextFieldOk(TextField textField) {
         return textField.getLength() != 0;
     }
 
-    public static boolean isTextFieldOk(TextField textField,TextFieldType type){
-        switch (type){
+    public static boolean isTextFieldOk(TextField textField, TextFieldType type) {
+        switch (type) {
             case STANDARD:
                 return textField.getLength() != 0;
             case NUMERIC:
                 boolean boo = true;
                 CharSequence charArr = textField.getCharacters();
                 for (int i = 0; i < charArr.length(); i++) {
-                    if (!Character.isDigit(charArr.charAt(i))){
+                    if (!Character.isDigit(charArr.charAt(i))) {
                         boo = false;
                         break;
                     }
