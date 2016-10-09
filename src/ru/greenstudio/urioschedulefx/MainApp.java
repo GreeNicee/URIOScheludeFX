@@ -23,28 +23,32 @@ public class MainApp extends Application {
     private BorderPane rootLayout;
 
     /**
-     * Данные, в виде наблюдаемого списка адресатов.
+     * Данные, в виде наблюдаемого списка.
      */
-    private ObservableList<String> lessonData = FXCollections.observableArrayList();
+    private ObservableList<String> lessonsData = FXCollections.observableArrayList();
+    private ObservableList<String> cabsData = FXCollections.observableArrayList();
 
     /**
      * Конструктор
      */
     public MainApp() {
         // В качестве образца добавляем некоторые данные
-        lessonData.add(new Lesson("Вася").getName());
-        lessonData.add(new Lesson("Володя").getName());
-        lessonData.add(new Lesson("Режий").getName());
-        lessonData.add(new Lesson("Валера").getName());
-        lessonData.add(new Lesson("Валера").getName());
-        lessonData.add(new Lesson("Эмили").getName());
-        lessonData.add(new Lesson("Джон").getName());
-        lessonData.add(new Lesson("Бъерн").getName());
-        lessonData.add(new Lesson("Последний").getName());
+        lessonsData.add(new Lesson("Вася").getName());
+        lessonsData.add(new Lesson("Володя").getName());
+        lessonsData.add(new Lesson("Режий").getName());
+        lessonsData.add(new Lesson("Валера").getName());
+
+        cabsData.add(new Lesson("Валера").getName());
+        cabsData.add(new Lesson("Эмили").getName());
+        cabsData.add(new Lesson("Джон").getName());
+        cabsData.add(new Lesson("Бъерн").getName());
     }
 
-    public ObservableList<String> getLessonData() {
-        return lessonData;
+    public ObservableList<String> getLessonsData() {
+        return lessonsData;
+    }
+    public ObservableList<String> getCabsData() {
+        return cabsData;
     }
 
 

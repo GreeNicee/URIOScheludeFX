@@ -15,7 +15,7 @@ public class LessonsAndCabsController {
     @FXML
     private ListView<String> lessonListView;
     @FXML
-    private ListView<Cab> cabListView;
+    private ListView<String> cabListView;
     @FXML
     private TextField textLesson;
     @FXML
@@ -25,7 +25,8 @@ public class LessonsAndCabsController {
 
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-        lessonListView.setItems(mainApp.getLessonData());
+        lessonListView.setItems(mainApp.getLessonsData());
+        cabListView.setItems(mainApp.getCabsData());
     }
 
     public LessonsAndCabsController() {
@@ -36,40 +37,98 @@ public class LessonsAndCabsController {
         int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             lessonListView.getItems().remove(selectedIndex);
+            lessonListView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
         } else {
-            // Ничего не выбрано.
-            showWarningOperation("удал", mainApp.getPrimaryStage(), "предмет");
+            showWarningOperation(mainApp.getPrimaryStage(), "удалить","предмет");
+        }
+    }
 
+    @FXML
+    private void handleAddCab() {
+        if (!isTextFieldOk(textCab)) {
+            showWarningOperation(mainApp.getPrimaryStage(), "добавить","аудиторию");
+            return;
+        }
+        if (!alreadyInStringData(mainApp.getCabsData(), textCab.getText(), mainApp.getPrimaryStage(),"аудиторию")) {
+            Lesson lesson = new Lesson(textCab.getText());
+            mainApp.getCabsData().add(lesson.getName());
+            cabListView.getSelectionModel().clearSelection();
+            textCab.setText("");
+            textCab.requestFocus();
+        }
+    }
+
+    @FXML
+    private void handleEditCab() {
+        String selectedLesson = cabListView.getSelectionModel().getSelectedItem();
+        if (selectedLesson != null) {
+            if (isTextFieldOk(textCab))   {
+                if (!alreadyInStringData(mainApp.getCabsData(), textCab.getText(), mainApp.getPrimaryStage(),"аудиторию")) {
+                    Lesson lesson = new Lesson(textCab.getText());
+                    mainApp.getCabsData().set(cabListView.getSelectionModel().getSelectedIndex(), lesson.getName());
+                    cabListView.getSelectionModel().clearSelection();
+                    textCab.setText("");
+                    textCab.requestFocus();
+                }
+            }else showWarningOperation(mainApp.getPrimaryStage(),"изменить","аудиторию");
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить","аудиторию");
+        }
+    }
+
+    @FXML
+    private void handleClickListViewCabs() {
+        String selectedCab = cabListView.getSelectionModel().getSelectedItem();
+        if (selectedCab != null) {
+            textCab.setText(selectedCab);
+        }
+    }
+
+    @FXML
+    private void handleDeleteCab() {
+        int selectedIndex = cabListView.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            cabListView.getItems().remove(selectedIndex);
+            cabListView.getSelectionModel().clearSelection();
+            textCab.setText("");
+            textCab.requestFocus();
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "удалить","аудиторию");
         }
     }
 
     @FXML
     private void handleAddLesson() {
         if (!isTextFieldOk(textLesson)) {
-            showWarningOperation("добав", mainApp.getPrimaryStage(), "предмет");
+            showWarningOperation(mainApp.getPrimaryStage(), "добавить","предмет");
             return;
         }
-        if (!alreadyInStringData(mainApp.getLessonData(), textLesson.getText(), mainApp.getPrimaryStage())) {
+        if (!alreadyInStringData(mainApp.getLessonsData(), textLesson.getText(), mainApp.getPrimaryStage(),"предмет")) {
             Lesson lesson = new Lesson(textLesson.getText());
-            mainApp.getLessonData().add(lesson.getName());
+            mainApp.getLessonsData().add(lesson.getName());
+            lessonListView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
         }
     }
 
-    /**
-     * Вызывается, когда пользователь кликает по кнопка Edit...
-     * Открывает диалоговое окно для изменения выбранного адресата.
-     */
     @FXML
-    private void handleEditPerson() {
+    private void handleEditLesson() {
         String selectedLesson = lessonListView.getSelectionModel().getSelectedItem();
-        if ((selectedLesson != null) || (!isTextFieldOk(textLesson))) {
-            if (!alreadyInStringData(mainApp.getLessonData(), textLesson.getText(), mainApp.getPrimaryStage())) {
-                Lesson lesson = new Lesson(textLesson.getText());
-                mainApp.getLessonData().set(lessonListView.getSelectionModel().getSelectedIndex(), lesson.getName());
-            }
+        if (selectedLesson != null) {
+            if (isTextFieldOk(textLesson))   {
+                if (!alreadyInStringData(mainApp.getLessonsData(), textLesson.getText(), mainApp.getPrimaryStage(),"предмет")) {
+                    Lesson lesson = new Lesson(textLesson.getText());
+                    mainApp.getLessonsData().set(lessonListView.getSelectionModel().getSelectedIndex(), lesson.getName());
+                    lessonListView.getSelectionModel().clearSelection();
+                    textLesson.setText("");
+                    textLesson.requestFocus();
+                }
+            }else showWarningOperation(mainApp.getPrimaryStage(),"изменить","предмет");
         } else {
-            // Ничего не выбрано.
-            showWarningOperation("измен", mainApp.getPrimaryStage(), "предмет");
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить","предмет");
         }
     }
 
