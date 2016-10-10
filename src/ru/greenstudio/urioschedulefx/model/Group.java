@@ -1,6 +1,8 @@
 package ru.greenstudio.urioschedulefx.model;
 
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
 public class Group {
@@ -8,7 +10,7 @@ public class Group {
     private final ObservableList<Lesson> lessons;
 
     public Group() {
-        this(null,null);
+        this(null, null);
     }
 
     /**
@@ -37,7 +39,8 @@ public class Group {
     public ObservableList<Lesson> getLessons() {
         return lessons;
     }
-    public void setLessons(ObservableList<Lesson> lessons){
+
+    public void setLessons(ObservableList<Lesson> lessons) {
         this.lessons.setAll(lessons);
     }
 }

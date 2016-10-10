@@ -52,13 +52,19 @@ public class MainApp extends Application {
 
         Random random = new Random();//TODO Разобраться почему часы не рандомятся
         for (int i = 0; i < 3; i++) {
-            lessonsData.clear();
+            ObservableList<Lesson> lessData = FXCollections.observableArrayList();
+
             for (int j = 0; j < lessonsListData.size(); j++) {
                 int rand = random.nextInt(100);
-                lessonsData.add(new Lesson(lessonsListData.get(j), rand));
+                lessData.add(new Lesson(lessonsListData.get(j), rand));
             }
-            groupsData.add(new Group("" + i, lessonsData));
+            groupsData.add(new Group("" + i, lessData));
         }
+
+        for (int i = 0; i < lessonsListData.size(); i++) {
+            lessonsData.add(new Lesson(lessonsListData.get(i), random.nextInt()));
+        }
+
         groupsData.add(new Group("Бизнес-информатика", lessonsData));
 
         for (int i = 0; i < groupsData.size(); i++) {

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -11,9 +13,18 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
                   <TextField fx:id="textGroup" promptText="Наименование" />
-                <Button mnemonicParsing="false" text="Добавить" />
-                  <Button mnemonicParsing="false" text="Удалить" />
-                  <Button mnemonicParsing="false" text="Изменить" />
+                <Button fx:id="add" mnemonicParsing="false" text="Добавить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id="edit" mnemonicParsing="false" text="Изменить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id="del" mnemonicParsing="false" text="Удалить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
               </items>
             </ToolBar>
             <ListView fx:id="groupsListView" layoutX="37.0" layoutY="189.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
