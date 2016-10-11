@@ -1,9 +1,11 @@
 package ru.greenstudio.urioschedulefx.view;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import ru.greenstudio.urioschedulefx.MainApp;
+import ru.greenstudio.urioschedulefx.model.Group;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInStringData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -28,19 +30,6 @@ public class LessonsAndCabsController {
     }
 
     public LessonsAndCabsController() {
-    }
-
-    @FXML
-    private void handleDeleteLesson() {
-        int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
-            lessonListView.getItems().remove(selectedIndex);
-            lessonListView.getSelectionModel().clearSelection();
-            textLesson.setText("");
-            textLesson.requestFocus();
-        } else {
-            showWarningOperation(mainApp.getPrimaryStage(), "удалить", "предмет");
-        }
     }
 
     @FXML
@@ -96,7 +85,7 @@ public class LessonsAndCabsController {
             showWarningOperation(mainApp.getPrimaryStage(), "удалить", "аудиторию");
         }
     }
-
+    //TODO затестить CRUD предметов в группах
     @FXML
     private void handleAddLesson() {
         if (!isTextFieldOk(textLesson)) {
@@ -109,6 +98,11 @@ public class LessonsAndCabsController {
             lessonListView.getSelectionModel().clearSelection();
             textLesson.setText("");
             textLesson.requestFocus();
+
+            ObservableList<Group> groups = mainApp.getGroupsData();
+            for (int i = 0; i < groups.size(); i++) {
+                groups.get(i).getLessonsHours().add(0);
+            }
         }
     }
 
@@ -127,6 +121,31 @@ public class LessonsAndCabsController {
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
+        }
+    }
+
+    @FXML
+    private void handleDeleteLesson() {
+        int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
+        String selectedItem = lessonListView.getSelectionModel().getSelectedItem();
+        if (selectedIndex >= 0) {
+            ObservableList<Group> groups = mainApp.getGroupsData();
+            for (int i = 0; i < groups.size(); i++) {
+                for (int j = 0; j < groups.get(i).getLessonsNames().size(); j++) {
+                    if (groups.get(i).getLessonsNames().get(j).equals(selectedItem)){
+                        groups.get(i).getLessonsHours().remove(j);
+                        break;
+                    }
+                }
+            }
+
+            lessonListView.getItems().remove(selectedIndex);
+            lessonListView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
+
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "удалить", "предмет");
         }
     }
 

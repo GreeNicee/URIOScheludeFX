@@ -25,7 +25,6 @@ public class Lesson {
     }
 
     public String getName() {
-
         return name.get();
     }
 

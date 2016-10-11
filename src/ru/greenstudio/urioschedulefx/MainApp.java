@@ -50,28 +50,24 @@ public class MainApp extends Application {
         cabsListData.add("Джон");
         cabsListData.add("Бъерн");
 
-        Random random = new Random();//TODO Разобраться почему часы не рандомятся
+        Random random = new Random();//TODO из файла
+        ObservableList<Integer> lessHoursData = FXCollections.observableArrayList();
         for (int i = 0; i < 3; i++) {
-            ObservableList<Lesson> lessData = FXCollections.observableArrayList();
-
+            lessHoursData.clear();
             for (int j = 0; j < lessonsListData.size(); j++) {
                 int rand = random.nextInt(100);
-                lessData.add(new Lesson(lessonsListData.get(j), rand));
+                lessHoursData.add(rand);
             }
-            groupsData.add(new Group("" + i, lessData));
+            groupsData.add(new Group("" + i, lessonsListData,lessHoursData));
         }
 
-        for (int i = 0; i < lessonsListData.size(); i++) {
-            lessonsData.add(new Lesson(lessonsListData.get(i), random.nextInt()));
-        }
-
-        groupsData.add(new Group("Бизнес-информатика", lessonsData));
+        groupsData.add(new Group("Бизнес-информатика", lessonsListData,lessHoursData));
 
         for (int i = 0; i < groupsData.size(); i++) {
             System.out.println();
-            for (int j = 0; j < groupsData.get(i).getLessons().size(); j++) {
-                System.out.print(groupsData.get(i).getLessons().get(j).getName() + " " +
-                        groupsData.get(i).getLessons().get(j).getHours() + " ");
+            for (int j = 0; j < groupsData.get(i).getLessonsNames().size(); j++) {
+                System.out.print(groupsData.get(i).getLessonsNames().get(j) + " " +
+                        groupsData.get(i).getLessonsHours().get(j) + " ");
             }
         }
     }

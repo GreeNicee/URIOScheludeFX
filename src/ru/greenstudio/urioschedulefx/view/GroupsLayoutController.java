@@ -53,8 +53,9 @@ public class GroupsLayoutController {
     private void showGroupDetails(Group group) {
         if (group != null) {
             lessonTableView.getItems().clear();
-            for (int i = 0; i < group.getLessons().size(); i++) {
-                lessonTableView.getItems().add(i, group.getLessons().get(i));
+            for (int i = 0; i < group.getLessonsNames().size(); i++) {
+                lessonTableView.getItems().add(i,
+                        new Lesson(group.getLessonsNames().get(i),group.getLessonsHours().get(i)));
             }
         } else {
             // Если Person = null, то убираем весь текст.
