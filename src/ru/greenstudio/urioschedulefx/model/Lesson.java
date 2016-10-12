@@ -47,4 +47,9 @@ public class Lesson {
     public void setHours(int hours) {
         this.hours.set(hours);
     }
+
+    @Override
+    public String toString() {
+        return "name=" + name + ", hours=" + hours;
+    }
 }

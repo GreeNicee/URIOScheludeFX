@@ -1,20 +1,33 @@
+.split-pane:horizontal > .split-pane-divider {
+    -fx-border-color: transparent #1d1d1d transparent #1d1d1d;
+    -fx-background-color: transparent, derive(#1d1d1d,20%);
+}
+
+.split-pane {
+    -fx-padding: 1 0 0 0;
+}
+
 #del{
     -fx-background-color: linear-gradient(#ff5400, #be1d00);
-    -fx-background-radius: 30;
-    -fx-background-insets: 0;
-    -fx-text-fill: white;
 }
 
 #edit{
     -fx-background-color: linear-gradient(#7ebcea, #2f4b8f);
-    -fx-background-radius: 30;
-    -fx-background-insets: 0;
-    -fx-text-fill: white;
 }
 
 #add{
     -fx-background-color: linear-gradient(#54ff00, #1dbe00);
+}
+
+.button {
+    -fx-text-fill: white;
     -fx-background-radius: 30;
     -fx-background-insets: 0;
-    -fx-text-fill: white;
 }
+
+.button:pressed, .button:default:hover:pressed {
+  -fx-background-color: white;
+  -fx-text-fill: #000000;
+}
+
+

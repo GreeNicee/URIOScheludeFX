@@ -6,22 +6,33 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import ru.greenstudio.urioschedulefx.Utils.IO.CabWrapper;
+import ru.greenstudio.urioschedulefx.Utils.IO.GroupWrapper;
+import ru.greenstudio.urioschedulefx.Utils.IO.LessonWrapper;
 import ru.greenstudio.urioschedulefx.model.Group;
 import ru.greenstudio.urioschedulefx.model.Lesson;
 import ru.greenstudio.urioschedulefx.view.GroupsLayoutController;
 import ru.greenstudio.urioschedulefx.view.LessonsAndCabsController;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-public class MainApp extends Application {
+import static ru.greenstudio.urioschedulefx.Utils.IO.Files.checkFiles;
+import static ru.greenstudio.urioschedulefx.Utils.IO.Files.loadDataFromFile;
+import static ru.greenstudio.urioschedulefx.Utils.IO.Files.saveDataToFile;
 
+public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
@@ -38,38 +49,32 @@ public class MainApp extends Application {
      * Конструктор
      */
     public MainApp() {
-        //TODO ИЗ ФАЙЛА ВСЕ!)
-        // В качестве образца добавляем некоторые данные
-        lessonsListData.add("Вася");
-        lessonsListData.add("Володя");
-        lessonsListData.add("Режий");
-        lessonsListData.add("Валера");
-
-        cabsListData.add("Валера");
-        cabsListData.add("Эмили");
-        cabsListData.add("Джон");
-        cabsListData.add("Бъерн");
-
-        Random random = new Random();//TODO из файла
-        ObservableList<Integer> lessHoursData = FXCollections.observableArrayList();
-        for (int i = 0; i < 3; i++) {
-            lessHoursData.clear();
-            for (int j = 0; j < lessonsListData.size(); j++) {
-                int rand = random.nextInt(100);
-                lessHoursData.add(rand);
-            }
-            groupsData.add(new Group("" + i, lessonsListData,lessHoursData));
-        }
-
-        groupsData.add(new Group("Бизнес-информатика", lessonsListData,lessHoursData));
-
-        for (int i = 0; i < groupsData.size(); i++) {
-            System.out.println();
-            for (int j = 0; j < groupsData.get(i).getLessonsNames().size(); j++) {
-                System.out.print(groupsData.get(i).getLessonsNames().get(j) + " " +
-                        groupsData.get(i).getLessonsHours().get(j) + " ");
-            }
-        }
+//        //TODO ИЗ ФАЙЛА ВСЕ!)
+//        // В качестве образца добавляем некоторые данные
+//        lessonsListData.add("Вася");
+//        lessonsListData.add("Володя");
+//        lessonsListData.add("Режий");
+//        lessonsListData.add("Валера");
+//
+//        cabsListData.add("Валера");
+//        cabsListData.add("Эмили");
+//        cabsListData.add("Джон");
+//        cabsListData.add("Бъерн");
+//
+//        Random random = new Random();//TODO из файла
+//        ObservableList<Integer> lessHoursData = FXCollections.observableArrayList();
+//        for (int i = 0; i < 3; i++) {
+//            lessHoursData.clear();
+//            for (int j = 0; j < lessonsListData.size(); j++) {
+//                int rand = random.nextInt(100);
+//                lessHoursData.add(rand);
+//            }
+//            Group group = new Group("" + i, lessonsListData,FXCollections.observableArrayList(lessHoursData));
+//            groupsData.add(group);
+//        }
+//
+//        groupsData.add(new Group("Бизнес-информатика", lessonsListData,lessHoursData));
+        loadDataFromFile(lessonsListData, cabsListData, groupsData);
     }
 
     public ObservableList<String> getLessonsListData() {
@@ -101,6 +106,11 @@ public class MainApp extends Application {
         showGroups();
     }
 
+    @Override
+    public void stop(){
+        System.out.println("Stage is closing");
+        saveDataToFile(lessonsListData,cabsListData, groupsData);
+    }
     private void initRootLayout() {
         try {
             // Загружаем корневой макет из fxml файла.

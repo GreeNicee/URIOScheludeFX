@@ -13,25 +13,25 @@
             <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
                   <TextField fx:id="textGroup" promptText="Наименование" />
-                <Button fx:id="add" mnemonicParsing="false" text="Добавить">
+                <Button fx:id="add" mnemonicParsing="false" onAction="#handleAddGroup" text="Добавить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button fx:id="edit" mnemonicParsing="false" text="Изменить">
+                  <Button fx:id="edit" mnemonicParsing="false" onAction="#handleEditGroup" text="Изменить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button fx:id="del" mnemonicParsing="false" text="Удалить">
+                  <Button fx:id="del" mnemonicParsing="false" onAction="#handleDeleteGroup" text="Удалить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
               </items>
             </ToolBar>
-            <ListView fx:id="groupsListView" layoutX="37.0" layoutY="189.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
+            <ListView fx:id="groupsListView" layoutX="37.0" layoutY="189.0" onMouseClicked="#handleClickListViewGroups" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
          </children></AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <TableView fx:id="lessonTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TableView fx:id="lessonTableView" editable="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TableColumn fx:id="nameLessonColumn" prefWidth="75.0" text="Предмет" />
                 <TableColumn fx:id="hoursLessonColumn" prefWidth="75.0" text="Часы" />

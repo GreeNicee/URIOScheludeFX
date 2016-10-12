@@ -66,14 +66,6 @@ public class LessonsAndCabsController {
     }
 
     @FXML
-    private void handleClickListViewCabs() {
-        String selectedCab = cabListView.getSelectionModel().getSelectedItem();
-        if (selectedCab != null) {
-            textCab.setText(selectedCab);
-        }
-    }
-
-    @FXML
     private void handleDeleteCab() {
         int selectedIndex = cabListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
@@ -85,7 +77,15 @@ public class LessonsAndCabsController {
             showWarningOperation(mainApp.getPrimaryStage(), "удалить", "аудиторию");
         }
     }
-    //TODO затестить CRUD предметов в группах
+
+    @FXML
+    private void handleClickListViewCabs() {
+        String selectedCab = cabListView.getSelectionModel().getSelectedItem();
+        if (selectedCab != null) {
+            textCab.setText(selectedCab);
+        }
+    }
+
     @FXML
     private void handleAddLesson() {
         if (!isTextFieldOk(textLesson)) {
@@ -132,7 +132,7 @@ public class LessonsAndCabsController {
             ObservableList<Group> groups = mainApp.getGroupsData();
             for (int i = 0; i < groups.size(); i++) {
                 for (int j = 0; j < groups.get(i).getLessonsNames().size(); j++) {
-                    if (groups.get(i).getLessonsNames().get(j).equals(selectedItem)){
+                    if (groups.get(i).getLessonsNames().get(j).equals(selectedItem)) {
                         groups.get(i).getLessonsHours().remove(j);
                         break;
                     }
