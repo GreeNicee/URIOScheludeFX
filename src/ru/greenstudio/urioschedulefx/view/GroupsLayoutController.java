@@ -99,7 +99,7 @@ public class GroupsLayoutController {
         if (!alreadyInGroupData(mainApp.getGroupsData(), textGroup.getText(), mainApp.getPrimaryStage(), "группу")) {
             String groupName = textGroup.getText();
             ObservableList<Integer> list = FXCollections.observableArrayList();
-            for (int i = 0; i < mainApp.getGroupsData().size(); i++) {
+            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
                 list.add(0);
             }
             mainApp.getGroupsData().add(new Group(groupName, mainApp.getLessonsListData(), list));

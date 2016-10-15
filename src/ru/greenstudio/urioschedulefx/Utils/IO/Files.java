@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class Files {
     private static final String path = "data";
-    private static final String[] files = {"cabs","lessons", "groups"};
+    private static final String[] files = {"cabs", "lessons", "groups"};
     private static final String format = ".xml";
 
     public static void checkFiles() {
@@ -33,20 +33,20 @@ public class Files {
     }
 
     public static void saveDataToFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
-                               ObservableList<Group> groupsData) {
+                                      ObservableList<Group> groupsData) {
         checkFiles();
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
+            //LESSONS-------------------------------------------------
             LessonWrapper lessonWrapper = new LessonWrapper();
             lessonWrapper.setLessons(lessonsListData);
 
-            File file = new File("data/"+files[0]+".xml");
+            File file = new File("data/" + files[0] + ".xml");
 
             m.marshal(lessonWrapper, file);
-
+            //CABS-----------------------------------------------------
             context = JAXBContext.newInstance(CabWrapper.class);
             m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -54,10 +54,10 @@ public class Files {
             CabWrapper cabWrapper = new CabWrapper();
             cabWrapper.setCabs(cabsListData);
 
-            file = new File("data/"+files[1]+".xml");
+            file = new File("data/" + files[1] + ".xml");
 
             m.marshal(cabWrapper, file);
-
+            //GROUPS---------------------------------------------------
             context = JAXBContext.newInstance(GroupWrapper.class);
             m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -65,26 +65,34 @@ public class Files {
             GroupWrapper groupWrapper = new GroupWrapper();
             groupWrapper.setGroups(groupsData);
 
-            file = new File("data/"+files[2]+".xml");
+            file = new File("data/" + files[2] + ".xml");
 
             m.marshal(groupWrapper, file);
+
+//            context = JAXBContext.newInstance(Group.class);
+//
+//            m = context.createMarshaller();
+//            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//            JAXBElement<Group> jaxbElement = new JAXBElement<Group>(new QName("group"), Group.class, groupsData.get(0));
+//            m.marshal(jaxbElement, System.out);
 
         } catch (Exception e) { // catches ANY exception
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Could not save data");
-            alert.setContentText("Could not save data to file");
+            alert.setContentText("Could not save data to file" + e);
 
             alert.showAndWait();
         }
     }
-    public static void loadDataFromFile(ObservableList<String> lessonsListData,ObservableList<String> cabsListData,
-                                 ObservableList<Group> groupsData) {
+
+    public static void loadDataFromFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
+                                        ObservableList<Group> groupsData) {
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
-            File file = new File("data/"+files[0]+".xml");
+            File file = new File("data/" + files[0] + ".xml");
 
             LessonWrapper lessonsWrapper = (LessonWrapper) um.unmarshal(file);
 
@@ -94,7 +102,7 @@ public class Files {
             context = JAXBContext.newInstance(CabWrapper.class);
             um = context.createUnmarshaller();
 
-            file = new File("data/"+files[1]+".xml");
+            file = new File("data/" + files[1] + ".xml");
 
             CabWrapper cabWrapper = (CabWrapper) um.unmarshal(file);
 
@@ -104,7 +112,7 @@ public class Files {
             context = JAXBContext.newInstance(GroupWrapper.class);
             um = context.createUnmarshaller();
 
-            file = new File("data/"+files[2]+".xml");
+            file = new File("data/" + files[2] + ".xml");
 
             //TODO Разобраться почему не все данные из группы сохраняются
             GroupWrapper groupWrapper = (GroupWrapper) um.unmarshal(file);
@@ -113,12 +121,12 @@ public class Files {
             groupsData.addAll(groupWrapper.getGroups());
 
         } catch (Exception e) { // catches ANY exception
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Could not load data");
-            alert.setContentText("Could not load data from file");
-
-            alert.showAndWait();
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("Could not load data");
+//            alert.setContentText("Could not load data from file");
+//
+//            alert.showAndWait();
         }
     }
 
