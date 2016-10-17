@@ -3,7 +3,7 @@ package ru.greenstudio.urioschedulefx.Utils;
 import javafx.scene.control.TextField;
 
 public class IsInputOk {
-    enum TextFieldType {STANDARD, NUMERIC}
+    public enum TextFieldType {STANDARD, NUMERIC}
 
     public static boolean isTextFieldOk(TextField textField) {
         return textField.getLength() != 0;

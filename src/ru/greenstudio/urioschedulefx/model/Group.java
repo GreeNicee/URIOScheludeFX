@@ -2,7 +2,6 @@ package ru.greenstudio.urioschedulefx.model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
@@ -18,13 +17,6 @@ public class Group {
         this(null, null, null);
     }
 
-    /**
-     * Конструктор с некоторыми начальными данными.
-     *
-     * @param name
-     * @param lessonsNames
-     * @param lessonsHours
-     */
     public Group(String name, List<String> lessonsNames, List<Integer> lessonsHours) {
         this.name = new SimpleStringProperty(name);
 

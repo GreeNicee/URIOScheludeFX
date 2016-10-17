@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.model.Group;
 
@@ -27,6 +28,18 @@ public class LessonsAndCabsController {
         this.mainApp = mainApp;
         lessonListView.setItems(mainApp.getLessonsListData());
         cabListView.setItems(mainApp.getCabsListData());
+
+        textLesson.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                handleAddLesson();
+            }
+        });
+
+        textCab.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                handleAddCab();
+            }
+        });
     }
 
     public LessonsAndCabsController() {
@@ -83,6 +96,7 @@ public class LessonsAndCabsController {
         String selectedCab = cabListView.getSelectionModel().getSelectedItem();
         if (selectedCab != null) {
             textCab.setText(selectedCab);
+            textCab.requestFocus();
         }
     }
 
@@ -154,6 +168,7 @@ public class LessonsAndCabsController {
         String selectedLesson = lessonListView.getSelectionModel().getSelectedItem();
         if (selectedLesson != null) {
             textLesson.setText(selectedLesson);
+            textLesson.requestFocus();
         }
     }
 }

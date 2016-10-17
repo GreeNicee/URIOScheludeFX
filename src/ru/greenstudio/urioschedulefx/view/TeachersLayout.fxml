@@ -12,29 +12,29 @@
             <children>
                 <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
-                        <TextField fx:id="textGroup" promptText="Наименование" />
-                        <Button fx:id="add" mnemonicParsing="false" text="Добавить">
+                        <TextField fx:id="textTeacher" promptText="Наименование" />
+                        <Button fx:id="add" mnemonicParsing="false" onMouseClicked="#handleAddTeacher" text="Добавить">
                             <cursor>
                                 <Cursor fx:constant="HAND" />
                             </cursor></Button>
-                        <Button fx:id="edit" mnemonicParsing="false" text="Изменить">
+                        <Button fx:id="edit" mnemonicParsing="false" onMouseClicked="#handleEditTeacher" text="Изменить">
                             <cursor>
                                 <Cursor fx:constant="HAND" />
                             </cursor></Button>
-                        <Button fx:id="del" mnemonicParsing="false" text="Удалить">
+                        <Button fx:id="del" mnemonicParsing="false" onMouseClicked="#handleDeleteTeacher" text="Удалить">
                             <cursor>
                                 <Cursor fx:constant="HAND" />
                             </cursor></Button>
                     </items>
                 </ToolBar>
-                <ListView fx:id="groupsListView" layoutX="37.0" layoutY="189.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
+                <ListView fx:id="teachersListView" layoutX="37.0" layoutY="189.0" onMouseClicked="#handleClickListViewTeachers" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
             </children></AnchorPane>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
             <children>
-                <TableView fx:id="lessonTableView" editable="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
+                <TableView fx:id="lessonTableView" editable="true" onMouseClicked="#handleClickTableViewLessons" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
                     <columns>
                         <TableColumn fx:id="nameLessonColumn" prefWidth="75.0" text="Предмет" />
-                        <TableColumn fx:id="hoursLessonColumn" prefWidth="75.0" text="Часы" />
+                  <TableColumn fx:id="hoursLessonColumn" prefWidth="75.0" text="Часы" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -42,23 +42,48 @@
                 </TableView>
             <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <items>
-                  <ComboBox fx:id="comboBoxTeacher" editable="true" prefWidth="200.0" promptText="Предмет" />
-                  <Button fx:id="add" mnemonicParsing="false" text="Добавить">
+                  <ComboBox fx:id="comboBoxTeacher" prefWidth="200.0" promptText="Предмет" />
+                  <Button fx:id="add" mnemonicParsing="false" onMouseClicked="#handleAddLesson" text="Добавить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="edit" mnemonicParsing="false" text="Изменить">
+                  <Button fx:id="edit" mnemonicParsing="false" onMouseClicked="#handleEditLesson" text="Изменить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="del" mnemonicParsing="false" text="Удалить">
+                  <Button fx:id="del" mnemonicParsing="false" onMouseClicked="#handleDeleteLesson" text="Удалить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
                </items>
+            </ToolBar>
+            <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+              <items>
+                  <TextField fx:id="textLessonHours" prefHeight="31.0" prefWidth="58.0" promptText="Часы" />
+                  <Label fx:id="labelLessonHours" text="MAX: " />
+                <Button fx:id="add" mnemonicParsing="false" onMouseClicked="#handleMaxLessonHours" text="Max">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id="add" mnemonicParsing="false" onMouseClicked="#handleHalfLessonHours" text="Half">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="edit" mnemonicParsing="false" onMouseClicked="#handleEditLessonHours" text="Изменить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+                  <Button fx:id="del" mnemonicParsing="false" onMouseClicked="#handleDeleteLessonHours" text="Обнулить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+              </items>
             </ToolBar>
             </children>
         </AnchorPane>

@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
@@ -13,6 +14,7 @@ import ru.greenstudio.urioschedulefx.model.Lesson;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInGroupData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
+import static ru.greenstudio.urioschedulefx.Utils.Funcs.checkLessonsData;
 import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 
 public class GroupsLayoutController {
@@ -26,6 +28,10 @@ public class GroupsLayoutController {
     private TableColumn<Lesson, String> nameLessonColumn;
     @FXML
     private TableColumn<Lesson, Integer> hoursLessonColumn;
+    @FXML
+    private Label labelLesson;
+    @FXML
+    private TextField textLesson;
 
     private MainApp mainApp;
 
@@ -62,19 +68,28 @@ public class GroupsLayoutController {
         nameLessonColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         hoursLessonColumn.setCellValueFactory(cellData -> cellData.getValue().getHoursProperty().asObject());
         hoursLessonColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        hoursLessonColumn.setOnEditCommit(
-                event -> groupsListView.getSelectionModel().getSelectedItem().getLessonsHours().set(
-                        event.getTablePosition().getRow(),
-                        event.getNewValue()
-                )
-        );
+//        hoursLessonColumn.setOnEditCommit(
+//                event -> groupsListView.getSelectionModel().getSelectedItem().getLessonsHours().set(
+//                        event.getTablePosition().getRow(), event.getNewValue()
+//                )
+//        );
 
         showGroupDetails(null);
-        // Слушаем изменения выбора, и при изменении отображаем
-        // дополнительную информацию об адресате.
         groupsListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showGroupDetails(newValue)
         );
+
+        textGroup.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                handleAddGroup();
+            }
+        });
+
+        textLesson.setOnKeyPressed(event -> {
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                handleEditLesson();
+            }
+        });
     }
 
     private void showGroupDetails(Group group) {
@@ -87,6 +102,67 @@ public class GroupsLayoutController {
         } else {
             // Если Person = null, то убираем весь текст.
             lessonTableView.getItems().clear();
+        }
+    }
+
+    @FXML
+    private void handleEditLesson() {
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
+
+        if (selectedLesson != null) {
+            if (isTextFieldOk(textLesson)) {
+                Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
+                int lessonHours = Integer.parseInt(textLesson.getText());
+                selectedLesson.setHours(lessonHours);
+                System.out.println(selectedLesson);
+                mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
+                        getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+                lessonTableView.getSelectionModel().clearSelection();
+                textLesson.setText("");
+                textLesson.requestFocus();
+
+                Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
+                ObservableList<Lesson> lessonsData = mainApp.getMaxLessonsData();
+                checkLessonsData(selectedLesson, newLesson, lessonsData);
+
+            } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
+        }
+    }
+
+    @FXML
+    private void handleDeleteLesson() {
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
+
+        if (selectedLesson != null) {
+            Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
+            int lessonHours = 0;
+            selectedLesson.setHours(lessonHours);
+            mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
+                    getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+            lessonTableView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
+
+            Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
+            ObservableList<Lesson> lessonsData = mainApp.getMaxLessonsData();
+            checkLessonsData(selectedLesson, newLesson, lessonsData);
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
+        }
+    }
+
+    @FXML
+    private void handleClickLessonsTableView() {
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
+        if (selectedLesson != null) {
+            labelLesson.setText(selectedLesson.getName());
+            textLesson.setText(String.valueOf(selectedLesson.getHours()));
+            textLesson.requestFocus();
+        } else {
+            labelLesson.setText("Предмет");
+            textLesson.setText("");
         }
     }
 
@@ -146,6 +222,7 @@ public class GroupsLayoutController {
         Group selectedGroup = groupsListView.getSelectionModel().getSelectedItem();
         if (selectedGroup != null) {
             textGroup.setText(selectedGroup.getName());
+            textGroup.requestFocus();
         }
     }
 }

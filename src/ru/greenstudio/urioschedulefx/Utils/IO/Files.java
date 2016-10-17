@@ -3,6 +3,7 @@ package ru.greenstudio.urioschedulefx.Utils.IO;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import ru.greenstudio.urioschedulefx.model.Group;
+import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 public class Files {
     private static final String path = "data";
-    private static final String[] files = {"cabs", "lessons", "groups"};
+    private static final String[] files = {"cabs", "lessons", "groups","teachers"};
     private static final String format = ".xml";
 
     public static void checkFiles() {
@@ -33,7 +34,7 @@ public class Files {
     }
 
     public static void saveDataToFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
-                                      ObservableList<Group> groupsData) {
+                                      ObservableList<Group> groupsData, ObservableList<Teacher> teachersData) {
         checkFiles();
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
@@ -68,13 +69,17 @@ public class Files {
             file = new File("data/" + files[2] + ".xml");
 
             m.marshal(groupWrapper, file);
-
-//            context = JAXBContext.newInstance(Group.class);
-//
+            //TEACHERS---------------------------------------------------
+//            context = JAXBContext.newInstance(TeacherWrapper.class);
 //            m = context.createMarshaller();
 //            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            JAXBElement<Group> jaxbElement = new JAXBElement<Group>(new QName("group"), Group.class, groupsData.get(0));
-//            m.marshal(jaxbElement, System.out);
+//
+//            TeacherWrapper teacherWrapper = new TeacherWrapper();
+//            teacherWrapper.setTeachers(teachersData);
+//
+//            file = new File("data/" + files[3] + ".xml");
+//
+//            m.marshal(teacherWrapper, file);
 
         } catch (Exception e) { // catches ANY exception
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -87,7 +92,7 @@ public class Files {
     }
 
     public static void loadDataFromFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
-                                        ObservableList<Group> groupsData) {
+                                        ObservableList<Group> groupsData, ObservableList<Teacher> teachersData) {
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
@@ -114,11 +119,20 @@ public class Files {
 
             file = new File("data/" + files[2] + ".xml");
 
-            //TODO Разобраться почему не все данные из группы сохраняются
             GroupWrapper groupWrapper = (GroupWrapper) um.unmarshal(file);
 
             groupsData.clear();
             groupsData.addAll(groupWrapper.getGroups());
+
+//            context = JAXBContext.newInstance(TeacherWrapper.class);
+//            um = context.createUnmarshaller();
+//
+//            file = new File("data/" + files[3] + ".xml");
+//
+//            TeacherWrapper teacherWrapper = (TeacherWrapper) um.unmarshal(file);
+//
+//            teachersData.clear();
+//            teachersData.addAll(teacherWrapper.getTeachers());
 
         } catch (Exception e) { // catches ANY exception
 //            Alert alert = new Alert(Alert.AlertType.ERROR);

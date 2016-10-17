@@ -1,34 +1,42 @@
 package ru.greenstudio.urioschedulefx.model;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 public class Teacher {
     private final StringProperty name;
-    @XmlElement(name = "lesson_name")
-    private final List<String> lessonsNames;
-    @XmlElement(name = "lesson_hours")
-    private final List<Integer> lessonsHours;
+    @XmlElement(name = "lessons")
+    private final List<Lesson> lessons;
+
+//    @XmlElement(name = "lesson_name")
+//    private final List<String> lessonsNames;
+//    @XmlElement(name = "lesson_hours")
+//    private final List<Integer> lessonsHours;
 
     public Teacher() {
-        this(null, null, null);
+        this(null, null);
     }
 
-    /**
-     * Конструктор с некоторыми начальными данными.
-     *
-     * @param name
-     * @param lessonsNames
-     * @param lessonsHours
-     */
-    public Teacher(String name, ObservableList<String> lessonsNames, ObservableList<Integer> lessonsHours) {
-        this.name = new SimpleStringProperty(name);
+    public Teacher(StringProperty name, List<Lesson> lessons) {
+        this.name = name;
+        this.lessons = lessons;
+    }
 
-        this.lessonsNames = lessonsNames;
-        this.lessonsHours = lessonsHours;
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
     }
 }

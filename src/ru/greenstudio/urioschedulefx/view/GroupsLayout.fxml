@@ -31,7 +31,7 @@
          </children></AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <TableView fx:id="lessonTableView" editable="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TableView fx:id="lessonTableView" onMouseClicked="#handleClickLessonsTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
               <columns>
                 <TableColumn fx:id="nameLessonColumn" prefWidth="75.0" text="Предмет" />
                 <TableColumn fx:id="hoursLessonColumn" prefWidth="75.0" text="Часы" />
@@ -40,6 +40,20 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
+            <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                  <Label fx:id="labelLesson" text="Предмет" />
+                  <TextField fx:id="textLesson" promptText="Часы" />
+                <Button fx:id="edit" mnemonicParsing="false" onAction="#handleEditLesson" text="Изменить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id="del" mnemonicParsing="false" onAction="#handleDeleteLesson" text="Обнулить">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+              </items>
+            </ToolBar>
          </children>
       </AnchorPane>
   </items>
