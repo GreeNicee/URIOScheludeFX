@@ -1,5 +1,6 @@
 package ru.greenstudio.urioschedulefx.model;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -19,8 +20,8 @@ public class Teacher {
         this(null, null);
     }
 
-    public Teacher(StringProperty name, List<Lesson> lessons) {
-        this.name = name;
+    public Teacher(String name, List<Lesson> lessons) {
+        this.name = new SimpleStringProperty(name);
         this.lessons = lessons;
     }
 

@@ -8,8 +8,6 @@ import java.util.List;
 
 public class Group {
     private final StringProperty name;
-    @XmlElement(name = "lesson_name")
-    private final List<String> lessonsNames;
     @XmlElement(name = "lesson_hours")
     private final List<Integer> lessonsHours;
 
@@ -20,7 +18,6 @@ public class Group {
     public Group(String name, List<String> lessonsNames, List<Integer> lessonsHours) {
         this.name = new SimpleStringProperty(name);
 
-        this.lessonsNames = lessonsNames;
         this.lessonsHours = lessonsHours;
     }
 
@@ -34,10 +31,6 @@ public class Group {
 
     public void setName(String name) {
         this.name.set(name);
-    }
-
-    public List<String> getLessonsNames() {
-        return lessonsNames;
     }
 
     public List<Integer> getLessonsHours() {

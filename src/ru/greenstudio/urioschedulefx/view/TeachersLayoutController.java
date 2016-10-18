@@ -1,6 +1,5 @@
 package ru.greenstudio.urioschedulefx.view;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,13 +9,9 @@ import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
-import ru.greenstudio.urioschedulefx.Utils.AutoCompleteComboboxListener;
 import ru.greenstudio.urioschedulefx.Utils.IsInputOk;
 import ru.greenstudio.urioschedulefx.model.Lesson;
 import ru.greenstudio.urioschedulefx.model.Teacher;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInTeacherData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -50,7 +45,7 @@ public class TeachersLayoutController {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
-        new AutoCompleteComboboxListener(comboBoxTeacher);
+//        new AutoCompleteComboboxListener(comboBoxTeacher);
 
 //        ObservableList<String> teachersNames = FXCollections.observableArrayList();
 //        for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
@@ -85,6 +80,28 @@ public class TeachersLayoutController {
                 (observable, oldValue, newValue) -> showTeacherDetails(newValue)
         );
 
+        comboBoxTeacher.setOnMouseClicked(event -> {
+            comboBoxTeacher.getItems().clear();
+            if (teachersListView.getSelectionModel().getSelectedItem() != null) {
+                for (int i = 0; i < mainApp.getMaxLessonsData().size(); i++) {
+                    System.out.println(mainApp.getMaxLessonsData().get(i));
+                    System.out.println(mainApp.getMaxLessonsData().get(i).getHours() - mainApp.getLessonsData().get(i).getHours());
+                    if (mainApp.getMaxLessonsData().get(i).getHours() - mainApp.getLessonsData().get(i).getHours() > 0)
+                        comboBoxTeacher.getItems().add(mainApp.getMaxLessonsData().get(i).getName());
+                }
+
+                for (int i = 0; i < lessonTableView.getItems().size(); i++) {
+                    for (int j = 0; j < comboBoxTeacher.getItems().size(); j++) {
+                        if (lessonTableView.getItems().get(i).getName().equals(comboBoxTeacher.getItems().get(j).toString())) {
+                            comboBoxTeacher.getItems().remove(j);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        });
+
         textTeacher.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.ENTER)) {
                 handleAddTeacher();
@@ -99,28 +116,110 @@ public class TeachersLayoutController {
     }
 
     @FXML
-    private void handleAddLesson(){
+    private void handleAddLesson() {
+        if (!isTextFieldOk(new TextField(comboBoxTeacher.getSelectionModel().getSelectedItem().toString()))) {
+            showWarningOperation(mainApp.getPrimaryStage(), "добавить", "преподавателя");
+            return;
+        }
+        String lessonName = comboBoxTeacher.getSelectionModel().getSelectedItem().toString();
+        int index = teachersListView.getSelectionModel().getSelectedIndex();
 
+        mainApp.getTeachersData().get(index).getLessons().add(new Lesson(lessonName, 0));
+        lessonTableView.getItems().add(new Lesson(lessonName, 0));
+        lessonTableView.getSelectionModel().clearSelection();
+        comboBoxTeacher.getSelectionModel().clearSelection();
+        comboBoxTeacher.requestFocus();
     }
 
     @FXML
-    private void handleEditLesson(){
+    private void handleEditLesson() {//TODO Возможно нужно обнулять часы)
+        if (!isTextFieldOk(new TextField(comboBoxTeacher.getSelectionModel().getSelectedItem().toString()))) {
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить", "преподавателя");
+            return;
+        }
+        String lessonName = comboBoxTeacher.getSelectionModel().getSelectedItem().toString();
+        int index = teachersListView.getSelectionModel().getSelectedIndex();
+        int lessonIndex = lessonTableView.getSelectionModel().getSelectedIndex();
 
+        mainApp.getTeachersData().get(index).getLessons().get(lessonIndex).setName(lessonName);
+        lessonTableView.getItems().get(lessonIndex).setName(lessonName);
+        lessonTableView.getSelectionModel().clearSelection();
+        comboBoxTeacher.getSelectionModel().clearSelection();
+        comboBoxTeacher.requestFocus();
     }
 
     @FXML
-    private void handleDeleteLesson(){
-
+    private void handleDeleteLesson() {
+        int selectedIndex = lessonTableView.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            for (int i = 0; i < mainApp.getLessonsData().size(); i++) {
+                if (mainApp.getLessonsData().get(i).getName().equals(lessonTableView.getItems().get(selectedIndex).getName())) {
+                    mainApp.getLessonsData().get(i).setHours(
+                            mainApp.getLessonsData().get(i).getHours() - lessonTableView.getItems().get(selectedIndex).getHours());
+                    break;
+                }
+            }
+            int teacherIndex = teachersListView.getSelectionModel().getSelectedIndex();
+            mainApp.getTeachersData().get(teacherIndex).getLessons().remove(selectedIndex);
+            lessonTableView.getItems().remove(selectedIndex);
+            lessonTableView.getSelectionModel().clearSelection();
+            comboBoxTeacher.getSelectionModel().clearSelection();
+            comboBoxTeacher.requestFocus();
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "удалить", "предмет");
+        }
+        System.out.println(mainApp.getMaxLessonsData());
+        System.out.println(mainApp.getLessonsData());
     }
 
     @FXML
-    private void handleMaxLessonHours(){
+    private void handleMaxLessonHours() {
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
 
+        if (selectedLesson != null) {
+            Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
+            int lessonHours = Integer.parseInt(labelLessonHours.getText().substring(5));
+            selectedLesson.setHours(lessonHours);
+
+            System.out.println(selectedLesson);
+            mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
+                    getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(lessonHours);
+            lessonTableView.getSelectionModel().clearSelection();
+            textLessonHours.setText("");
+            textLessonHours.requestFocus();
+
+            Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
+            ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
+            checkLessonsData(selectedLesson, newLesson, lessonsData);
+
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
+        }
     }
 
     @FXML
-    private void handleHalfLessonHours(){
+    private void handleHalfLessonHours() {
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
 
+        if (selectedLesson != null) {
+            Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
+            int lessonHours = Integer.parseInt(labelLessonHours.getText().substring(5)) / 2;
+            selectedLesson.setHours(lessonHours);
+
+            System.out.println(selectedLesson);
+            mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
+                    getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(lessonHours);
+            lessonTableView.getSelectionModel().clearSelection();
+            textLessonHours.setText("");
+            textLessonHours.requestFocus();
+
+            Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
+            ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
+            checkLessonsData(selectedLesson, newLesson, lessonsData);
+
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
+        }
     }
 
     @FXML
@@ -133,8 +232,8 @@ public class TeachersLayoutController {
                 int lessonHours = Integer.parseInt(textLessonHours.getText());
                 selectedLesson.setHours(lessonHours);
                 System.out.println(selectedLesson);
-                mainApp.getGroupsData().get(teachersListView.getSelectionModel().getSelectedIndex()).
-                        getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+                mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
+                        getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(selectedLesson.getHours());
                 lessonTableView.getSelectionModel().clearSelection();
                 textLessonHours.setText("");
                 textLessonHours.requestFocus();
@@ -149,9 +248,8 @@ public class TeachersLayoutController {
         }
     }
 
-
     @FXML
-    private void handleDeleteLessonHours(){
+    private void handleDeleteLessonHours() {
         Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
 
         if (selectedLesson != null) {
@@ -173,19 +271,23 @@ public class TeachersLayoutController {
     }
 
     @FXML
-    private void handleClickTableViewLessons(){
+    private void handleClickTableViewLessons() {
         Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
         if (selectedLesson != null) {
-            textLessonHours.setText(selectedLesson.getName());
-            //TODO изменить на актуальные предметы
-            int index = 0;
+            textLessonHours.setText(String.valueOf(selectedLesson.getHours()));
+
+            int index = -1;
             for (int i = 0; i < mainApp.getMaxLessonsData().size(); i++) {
-                if (mainApp.getMaxLessonsData().get(i).getName().equals(selectedLesson.getName())){
+                if (mainApp.getMaxLessonsData().get(i).getName().equals(selectedLesson.getName())) {
                     index = i;
+                    break;
                 }
             }
-            if (index != 0)
-                labelLessonHours.setText("MAX: " + mainApp.getMaxLessonsData().get(index).getHours());
+            if (index != -1) {
+                int maxHours = mainApp.getMaxLessonsData().get(index).getHours() - mainApp.getLessonsData().get(index).getHours();
+                maxHours += selectedLesson.getHours();
+                labelLessonHours.setText("MAX: " + maxHours);
+            }
             textLessonHours.requestFocus();
         }
     }
@@ -198,16 +300,6 @@ public class TeachersLayoutController {
 //                mainApp.getMaxLessonsData().get(i));
                 lessonTableView.getItems().add(i, lesson);
             }
-            ObservableList<String> lessons = FXCollections.observableArrayList();
-            comboBoxTeacher.getItems().clear();
-            for (int i = 0; i < mainApp.getMaxLessonsData().size(); i++) {
-                comboBoxTeacher.getItems().add(mainApp.getMaxLessonsData().get(i).getName());
-            }
-            for (int i = 0; i < lessonTableView.getItems().size(); i++) {
-                if (lessonTableView.getItems().get(i).equals(comboBoxTeacher.getItems().get(i)))
-                    comboBoxTeacher.getItems().remove(i);
-            }
-
         } else {
             lessonTableView.getItems().clear();
         }
@@ -222,7 +314,7 @@ public class TeachersLayoutController {
         if (!alreadyInTeacherData(mainApp.getTeachersData(), textTeacher.getText(), mainApp.getPrimaryStage(), "преподаватель")) {
             String teacherName = textTeacher.getText();
 
-            mainApp.getTeachersData().add(new Teacher(new SimpleStringProperty(teacherName),FXCollections.observableArrayList()));
+            mainApp.getTeachersData().add(new Teacher(teacherName, FXCollections.observableArrayList()));
             teachersListView.getSelectionModel().clearSelection();
             textTeacher.setText("");
             textTeacher.requestFocus();

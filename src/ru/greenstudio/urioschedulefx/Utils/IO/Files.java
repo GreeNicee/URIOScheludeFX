@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class Files {
     private static final String path = "data";
-    private static final String[] files = {"cabs", "lessons", "groups","teachers"};
+    private static final String[] files = {"cabs", "lessons", "groups", "teachers"};
     private static final String format = ".xml";
 
     public static void checkFiles() {
@@ -44,7 +44,7 @@ public class Files {
             LessonWrapper lessonWrapper = new LessonWrapper();
             lessonWrapper.setLessons(lessonsListData);
 
-            File file = new File("data/" + files[0] + ".xml");
+            File file = new File("data/" + files[1] + ".xml");
 
             m.marshal(lessonWrapper, file);
             //CABS-----------------------------------------------------
@@ -55,7 +55,7 @@ public class Files {
             CabWrapper cabWrapper = new CabWrapper();
             cabWrapper.setCabs(cabsListData);
 
-            file = new File("data/" + files[1] + ".xml");
+            file = new File("data/" + files[0] + ".xml");
 
             m.marshal(cabWrapper, file);
             //GROUPS---------------------------------------------------
@@ -70,16 +70,16 @@ public class Files {
 
             m.marshal(groupWrapper, file);
             //TEACHERS---------------------------------------------------
-//            context = JAXBContext.newInstance(TeacherWrapper.class);
-//            m = context.createMarshaller();
-//            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//
-//            TeacherWrapper teacherWrapper = new TeacherWrapper();
-//            teacherWrapper.setTeachers(teachersData);
-//
-//            file = new File("data/" + files[3] + ".xml");
-//
-//            m.marshal(teacherWrapper, file);
+            context = JAXBContext.newInstance(TeacherWrapper.class);
+            m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            TeacherWrapper teacherWrapper = new TeacherWrapper();
+            teacherWrapper.setTeachers(teachersData);
+
+            file = new File("data/" + files[3] + ".xml");
+
+            m.marshal(teacherWrapper, file);
 
         } catch (Exception e) { // catches ANY exception
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -97,7 +97,7 @@ public class Files {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
-            File file = new File("data/" + files[0] + ".xml");
+            File file = new File("data/" + files[1] + ".xml");
 
             LessonWrapper lessonsWrapper = (LessonWrapper) um.unmarshal(file);
 
@@ -107,7 +107,7 @@ public class Files {
             context = JAXBContext.newInstance(CabWrapper.class);
             um = context.createUnmarshaller();
 
-            file = new File("data/" + files[1] + ".xml");
+            file = new File("data/" + files[0] + ".xml");
 
             CabWrapper cabWrapper = (CabWrapper) um.unmarshal(file);
 
@@ -124,15 +124,15 @@ public class Files {
             groupsData.clear();
             groupsData.addAll(groupWrapper.getGroups());
 
-//            context = JAXBContext.newInstance(TeacherWrapper.class);
-//            um = context.createUnmarshaller();
-//
-//            file = new File("data/" + files[3] + ".xml");
-//
-//            TeacherWrapper teacherWrapper = (TeacherWrapper) um.unmarshal(file);
-//
-//            teachersData.clear();
-//            teachersData.addAll(teacherWrapper.getTeachers());
+            context = JAXBContext.newInstance(TeacherWrapper.class);
+            um = context.createUnmarshaller();
+
+            file = new File("data/" + files[3] + ".xml");
+
+            TeacherWrapper teacherWrapper = (TeacherWrapper) um.unmarshal(file);
+
+            teachersData.clear();
+            teachersData.addAll(teacherWrapper.getTeachers());
 
         } catch (Exception e) { // catches ANY exception
 //            Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.model.Group;
+import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInStringData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -100,7 +101,7 @@ public class LessonsAndCabsController {
         }
     }
 
-    @FXML
+    @FXML//TODO Обновление в группах
     private void handleAddLesson() {
         if (!isTextFieldOk(textLesson)) {
             showWarningOperation(mainApp.getPrimaryStage(), "добавить", "предмет");
@@ -114,8 +115,8 @@ public class LessonsAndCabsController {
             textLesson.requestFocus();
 
             ObservableList<Group> groups = mainApp.getGroupsData();
-            for (int i = 0; i < groups.size(); i++) {
-                groups.get(i).getLessonsHours().add(0);
+            for (Group group : groups) {
+                group.getLessonsHours().add(0);
             }
         }
     }
@@ -138,18 +139,36 @@ public class LessonsAndCabsController {
         }
     }
 
-    @FXML
+    @FXML//TODO Обновление в группах
     private void handleDeleteLesson() {
         int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
         String selectedItem = lessonListView.getSelectionModel().getSelectedItem();
         if (selectedIndex >= 0) {
             ObservableList<Group> groups = mainApp.getGroupsData();
-            for (int i = 0; i < groups.size(); i++) {
-                for (int j = 0; j < groups.get(i).getLessonsNames().size(); j++) {
-                    if (groups.get(i).getLessonsNames().get(j).equals(selectedItem)) {
-                        groups.get(i).getLessonsHours().remove(j);
+            for (Group group : groups) {
+                for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
+                    if (mainApp.getLessonsListData().get(j).equals(selectedItem)) {
+                        group.getLessonsHours().remove(j);
                         break;
                     }
+                }
+            }
+
+            ObservableList<Teacher> teachers = mainApp.getTeachersData();
+            for (Teacher teacher : teachers) {
+                for (int j = 0; j < teacher.getLessons().size(); j++) {
+                    if (teacher.getLessons().get(j).getName().equals(selectedItem)) {
+                        teacher.getLessons().remove(j);
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 0; i < mainApp.getMaxLessonsData().size(); i++) {
+                if (mainApp.getMaxLessonsData().get(i).getName().equals(selectedItem)) {
+                    mainApp.getLessonsData().remove(i);
+                    mainApp.getMaxLessonsData().remove(i);
+                    break;
                 }
             }
 

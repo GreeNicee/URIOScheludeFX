@@ -20,6 +20,7 @@ import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 public class GroupsLayoutController {
     @FXML
     private ListView<Group> groupsListView;
+
     @FXML
     private TableView<Lesson> lessonTableView;
     @FXML
@@ -76,8 +77,7 @@ public class GroupsLayoutController {
 
         showGroupDetails(null);
         groupsListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showGroupDetails(newValue)
-        );
+                (observable, oldValue, newValue) -> showGroupDetails(newValue));
 
         textGroup.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.ENTER)) {
@@ -95,8 +95,8 @@ public class GroupsLayoutController {
     private void showGroupDetails(Group group) {
         if (group != null) {
             lessonTableView.getItems().clear();
-            for (int i = 0; i < group.getLessonsNames().size(); i++) {
-                Lesson lesson = new Lesson(group.getLessonsNames().get(i), group.getLessonsHours().get(i));
+            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
+                Lesson lesson = new Lesson(mainApp.getLessonsListData().get(i), group.getLessonsHours().get(i));
                 lessonTableView.getItems().add(i, lesson);
             }
         } else {
@@ -122,8 +122,9 @@ public class GroupsLayoutController {
                 textLesson.requestFocus();
 
                 Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
-                ObservableList<Lesson> lessonsData = mainApp.getMaxLessonsData();
-                checkLessonsData(selectedLesson, newLesson, lessonsData);
+                ObservableList<Lesson> lessonsMaxData = mainApp.getMaxLessonsData();
+                ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
+                checkLessonsData(selectedLesson, newLesson, lessonsMaxData, lessonsData);
 
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
@@ -146,8 +147,9 @@ public class GroupsLayoutController {
             textLesson.requestFocus();
 
             Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
-            ObservableList<Lesson> lessonsData = mainApp.getMaxLessonsData();
-            checkLessonsData(selectedLesson, newLesson, lessonsData);
+            ObservableList<Lesson> lessonsMaxData = mainApp.getMaxLessonsData();
+            ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
+            checkLessonsData(selectedLesson, newLesson, lessonsMaxData, lessonsData);
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }

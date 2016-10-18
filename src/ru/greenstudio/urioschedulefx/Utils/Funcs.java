@@ -4,29 +4,60 @@ import javafx.collections.ObservableList;
 import ru.greenstudio.urioschedulefx.model.Lesson;
 
 public class Funcs {
-    public static void checkLessonsData(Lesson selectedLesson, Lesson newLesson, ObservableList<Lesson> lessonsData) {
-        if (lessonsData.size() == 0 && selectedLesson.getHours() > 0) {
-            lessonsData.add(selectedLesson);
+    public static void checkLessonsData(Lesson selectedLesson, Lesson newLesson,
+                                        ObservableList<Lesson> lessonsMaxData, ObservableList<Lesson> lessonsData) {
+        if (lessonsMaxData.size() == 0 && selectedLesson.getHours() > 0) {
+            lessonsMaxData.add(selectedLesson);
+            lessonsData.add(new Lesson(selectedLesson.getName(), 0));
         } else {
-            for (int i = 0; i < lessonsData.size(); i++) {
-                if (lessonsData.get(i).getName().equals(newLesson.getName())) {
-                    int num = lessonsData.get(i).getHours() + newLesson.getHours();
-                    lessonsData.get(i).setHours(num);
-                    if (lessonsData.get(i).getHours() <= 0)
-                        lessonsData.remove(i);
+            for (int i = 0; i < lessonsMaxData.size(); i++) {
+                if (lessonsMaxData.get(i).getName().equals(newLesson.getName())) {
+                    int num = lessonsMaxData.get(i).getHours() + newLesson.getHours();
+                    lessonsMaxData.get(i).setHours(num);
+                    if (lessonsMaxData.get(i).getHours() <= 0)
+                        lessonsMaxData.remove(i);
                     break;
-                } else if (i == lessonsData.size() - 1) {
-                    lessonsData.add(selectedLesson);
-                    if (lessonsData.get(i).getHours() <= 0)
+                } else if (i == lessonsMaxData.size() - 1) {
+                    lessonsMaxData.add(selectedLesson);
+                    lessonsData.add(new Lesson(selectedLesson.getName(), 0));
+                    if (lessonsMaxData.get(i).getHours() <= 0) {
+                        lessonsMaxData.remove(i);
                         lessonsData.remove(i);
+                    }
                     break;
                 }
             }
         }
 
-        for (Lesson lesson : lessonsData) {
+        for (Lesson lesson : lessonsMaxData) {
             System.out.println(lesson.getName() + " " + lesson.getHours());
         }
     }
 
+    public static void checkLessonsData(Lesson selectedLesson, Lesson newLesson,
+                                        ObservableList<Lesson> lessonsMaxData) {
+        if (lessonsMaxData.size() == 0 && selectedLesson.getHours() > 0) {
+            lessonsMaxData.add(selectedLesson);
+        } else {
+            for (int i = 0; i < lessonsMaxData.size(); i++) {
+                if (lessonsMaxData.get(i).getName().equals(newLesson.getName())) {
+                    int num = lessonsMaxData.get(i).getHours() + newLesson.getHours();
+                    lessonsMaxData.get(i).setHours(num);
+                    if (lessonsMaxData.get(i).getHours() <= 0)
+                        lessonsMaxData.remove(i);
+                    break;
+                } else if (i == lessonsMaxData.size() - 1) {
+                    lessonsMaxData.add(selectedLesson);
+                    if (lessonsMaxData.get(i).getHours() <= 0) {
+                        lessonsMaxData.remove(i);
+                    }
+                    break;
+                }
+            }
+        }
+
+        for (Lesson lesson : lessonsMaxData) {
+            System.out.println(lesson.getName() + " " + lesson.getHours());
+        }
+    }
 }

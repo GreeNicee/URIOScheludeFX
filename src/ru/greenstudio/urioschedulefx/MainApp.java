@@ -1,7 +1,6 @@
 package ru.greenstudio.urioschedulefx;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -47,7 +46,7 @@ public class MainApp extends Application {
         groupsData.setAll(new Group("LOL",
                 FXCollections.observableArrayList("lol", "lol"),
                 FXCollections.observableArrayList(0, 0)));
-        Teacher teacher = new Teacher(new SimpleStringProperty("писька"), new ArrayList<Lesson>());
+        Teacher teacher = new Teacher("писька", new ArrayList<Lesson>());
         teacher.getLessons().add(0, new Lesson("asd", 12));
         teacher.getLessons().add(0, new Lesson("dsa", 0));
 
@@ -61,17 +60,30 @@ public class MainApp extends Application {
 //        setTestValues();
 
         loadDataFromFile(lessonsListData, cabsListData, groupsData, teachersData);
+
+
+        for (int i = 0; i < teachersData.size(); i++) {
+            if (teachersData.get(i).getLessons() == null) {
+                teachersData.set(i, new Teacher(teachersData.get(i).getName(), FXCollections.observableArrayList()));
+            }
+        }
+
         setMaxLessonsData();
         setLessonsData();
 
+        System.out.println("MaxLessonsData");
         for (Lesson aLessonsData : maxLessonsData) {
+            System.out.println(aLessonsData.getName() + " " + aLessonsData.getHours());
+        }
+        System.out.println("LessonsData");
+        for (Lesson aLessonsData : lessonsData) {
             System.out.println(aLessonsData.getName() + " " + aLessonsData.getHours());
         }
     }
 
     private void setMaxLessonsData() {
         for (Group aGroupsData : groupsData) {
-            List<String> lessNames = aGroupsData.getLessonsNames();
+            List<String> lessNames = lessonsListData;
             for (int j = 0; j < lessNames.size(); j++) {
                 String less = lessNames.get(j);
                 int lessHours = aGroupsData.getLessonsHours().get(j);
@@ -98,23 +110,18 @@ public class MainApp extends Application {
     }
 
     private void setLessonsData() {
+        for (Lesson aMaxLessonsData : maxLessonsData) {
+            lessonsData.add(new Lesson(aMaxLessonsData.getName(), 0));
+        }
         for (Teacher aTeachersData : teachersData) {
             List<Lesson> lessons = aTeachersData.getLessons();
-            for (int j = 0; j < lessons.size(); j++) {
-                Lesson lesson = lessons.get(j);
-
-                if (lesson.getHours() != 0) {
-                    if (lessonsData.size() == 0) {
-                        System.out.println("null " + lesson.getName() + " " + lesson.getHours());
-                        lessonsData.add(new Lesson(lesson.getName(), lesson.getHours()));
-                    } else {
-                        for (int i = 0; i < lessonsData.size(); i++) {
-                            if (lessonsData.get(i).getName().equals(lesson.getName())) {
-                                int num = lessonsData.get(i).getHours() + lesson.getHours();
-                                lessonsData.get(i).setHours(num);
-                                break;
-                            } else if (i == lessonsData.size() - 1) {
-                                lessonsData.add(new Lesson(lesson.getName(), lesson.getHours()));
+            if (lessons != null) {
+                for (Lesson lesson : lessons) {
+                    if (lesson.getHours() != 0) {
+                        for (Lesson aLessonsData : lessonsData) {
+                            if (aLessonsData.getName().equals(lesson.getName())) {
+                                int num = aLessonsData.getHours() + lesson.getHours();
+                                aLessonsData.setHours(num);
                                 break;
                             }
                         }
