@@ -4,100 +4,86 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Schedule {
+    private String name;
+    private List<Day> days;
+
     private List<Lesson> maxGroupLessons;
     private List<Lesson> actualGroupLessons;
 
     private List<Lesson> maxTeacherLessons;
     private List<Lesson> actualTeacherLessons;
 
-    private String name;
-    private Day[] days;//7 дней
+    public Schedule(String name, List<Day> days, List<Lesson> maxGroupLessons, List<Lesson> maxTeacherLessons) {
+        this.name = name;
+        this.days = days;
+        this.maxGroupLessons = maxGroupLessons;
+        this.maxTeacherLessons = maxTeacherLessons;
 
-    private class Day {
-        private String name;//понедельник, вторник и т д
-        private ArrayList<Lecture> lectures;//7 пар
-
-        public Day(String name, ArrayList<Lecture> lectures) {
-            this.name = name;
-            this.lectures = lectures;
-        }
+        actualGroupLessons = new ArrayList<>();
+        actualTeacherLessons = new ArrayList<>();
     }
 
-    private class Lecture {//Хранилище всех пар для всхе групп для конкретного номера пары (на первой паре такие то предметы и т д)
-        private String numName;//номер пары
-        private List<String> usedCabs;//использованные аудитории
-        private ArrayList<SchLesson> groupsLessons;
-
-
-        public Lecture() {
-            this(null, null);
-        }
-
-        public Lecture(String numName, ArrayList<SchLesson> groupsLessons) {
-            this.numName = numName;
-
-            this.usedCabs = new ArrayList<String>();
-
-            this.groupsLessons = groupsLessons;
-        }
-
-        public ArrayList<SchLesson> getGroupsLessons() {
-            return groupsLessons;
-        }
-
-        public void setGroupsLessons(ArrayList<SchLesson> groupsLessons) {
-            this.groupsLessons = groupsLessons;
-        }
-
+    public Schedule() {
+        this(null, null, null, null);
     }
 
-    private class SchLesson {//Сама пара для каждой группы со всей инфой
-        private String cabName;
-        private String groupName;
-        private String lessonName;
-        private String teacherName;
+    public String getName() {
+        return name;
+    }
 
-        public SchLesson() {
-            this(null, null, null, null);
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        public SchLesson(String cabName, String groupName, String lessonName, String teacherName) {
-            this.cabName = cabName;
-            this.groupName = groupName;
-            this.lessonName = lessonName;
-            this.teacherName = teacherName;
-        }
+    public List<Day> getDays() {
+        return days;
+    }
 
-        public String getCabName() {
-            return cabName;
-        }
+    public void setDays(List<Day> days) {
+        this.days = days;
+    }
 
-        public void setCabName(String cabName) {
-            this.cabName = cabName;
-        }
+    public List<Lesson> getMaxGroupLessons() {
+        return maxGroupLessons;
+    }
 
-        public String getGroupName() {
-            return groupName;
-        }
+    public void setMaxGroupLessons(List<Lesson> maxGroupLessons) {
+        this.maxGroupLessons = maxGroupLessons;
+    }
 
-        public void setGroupName(String groupName) {
-            this.groupName = groupName;
-        }
+    public List<Lesson> getActualGroupLessons() {
+        return actualGroupLessons;
+    }
 
-        public String getLessonName() {
-            return lessonName;
-        }
+    public void setActualGroupLessons(List<Lesson> actualGroupLessons) {
+        this.actualGroupLessons = actualGroupLessons;
+    }
 
-        public void setLessonName(String lessonName) {
-            this.lessonName = lessonName;
-        }
+    public List<Lesson> getMaxTeacherLessons() {
+        return maxTeacherLessons;
+    }
 
-        public String getTeacherName() {
-            return teacherName;
-        }
+    public void setMaxTeacherLessons(List<Lesson> maxTeacherLessons) {
+        this.maxTeacherLessons = maxTeacherLessons;
+    }
 
-        public void setTeacherName(String teacherName) {
-            this.teacherName = teacherName;
-        }
+    public List<Lesson> getActualTeacherLessons() {
+        return actualTeacherLessons;
+    }
+
+    public void setActualTeacherLessons(List<Lesson> actualTeacherLessons) {
+        this.actualTeacherLessons = actualTeacherLessons;
+    }
+
+    @Override
+    public String toString() {
+        return "Schedule{" +
+                "name='" + name + '\'' + "\n" +
+                ", days=" + days +
+                ",\n maxGroupLessons=" + maxGroupLessons +
+                ",\n actualGroupLessons=" + actualGroupLessons +
+                ",\n maxTeacherLessons=" + maxTeacherLessons +
+                ",\n actualTeacherLessons=" + actualTeacherLessons +
+                '}';
     }
 }

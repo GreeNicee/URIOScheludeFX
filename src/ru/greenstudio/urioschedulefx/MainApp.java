@@ -12,11 +12,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import ru.greenstudio.urioschedulefx.model.Group;
-import ru.greenstudio.urioschedulefx.model.Lesson;
-import ru.greenstudio.urioschedulefx.model.Teacher;
+import ru.greenstudio.urioschedulefx.model.*;
 import ru.greenstudio.urioschedulefx.view.GroupsLayoutController;
 import ru.greenstudio.urioschedulefx.view.LessonsAndCabsController;
+import ru.greenstudio.urioschedulefx.view.ScheduleLayoutController;
 import ru.greenstudio.urioschedulefx.view.TeachersLayoutController;
 
 import java.io.IOException;
@@ -31,6 +30,12 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
+    private Schedule schedule;
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
     private ObservableList<String> lessonsListData = FXCollections.observableArrayList();
     private ObservableList<String> cabsListData = FXCollections.observableArrayList();
 
@@ -40,7 +45,31 @@ public class MainApp extends Application {
     private ObservableList<Lesson> lessonsData = FXCollections.observableArrayList();
     private ObservableList<Teacher> teachersData = FXCollections.observableArrayList();
 
+    private ArrayList<String> lectureNames = new ArrayList<String>();
+
+    public ArrayList<String> getLectureNames() {
+        return lectureNames;
+    }
+
     public MainApp() {
+        lectureNames.add("Первая пара");
+        lectureNames.add("Вторая пара");
+        lectureNames.add("Третья пара");
+        lectureNames.add("Четвертая пара");
+        lectureNames.add("Пятая пара");
+        lectureNames.add("Шестая пара");
+        lectureNames.add("Седьмая пара");
+
+        schedule = new Schedule("Тестовое расписание", FXCollections.observableArrayList(), getMaxLessonsData(), getLessonsData());
+        schedule.getDays().add(new Day("Понедельник", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Вторник", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Среда", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Четверг", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Пятница", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Суббота", new ArrayList<Lecture>()));
+        schedule.getDays().add(new Day("Воскресенье", new ArrayList<Lecture>()));
+        schedule.setMaxGroupLessons(maxLessonsData);//group
+
         lessonsListData.setAll("LOL");
         cabsListData.setAll("LOL");
         groupsData.setAll(new Group("LOL",
@@ -70,6 +99,16 @@ public class MainApp extends Application {
 
         setMaxLessonsData();
         setLessonsData();
+
+        schedule.setActualGroupLessons(FXCollections.observableArrayList());
+        for (int i = 0; i < schedule.getMaxGroupLessons().size(); i++) {
+            schedule.getActualGroupLessons().add(new Lesson(schedule.getMaxGroupLessons().get(i).getName(), 0));
+        }
+        schedule.setMaxTeacherLessons(lessonsData);//teacher
+        schedule.setActualTeacherLessons(FXCollections.observableArrayList());
+        for (int i = 0; i < schedule.getMaxTeacherLessons().size(); i++) {
+            schedule.getActualTeacherLessons().add(new Lesson(schedule.getMaxTeacherLessons().get(i).getName(), 0));
+        }
 
         System.out.println("MaxLessonsData");
         for (Lesson aLessonsData : maxLessonsData) {
@@ -195,6 +234,8 @@ public class MainApp extends Application {
         showGroups();
 
         showTeachers();
+
+        showSchedule();
     }
 
     @Override
@@ -248,6 +289,40 @@ public class MainApp extends Application {
             }
             // Даём контроллеру доступ к главному приложению.
             TeachersLayoutController controller = loader.getController();
+            controller.setMainApp(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showSchedule() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/ScheduleLayout.fxml"));
+            AnchorPane schedule = loader.load();
+
+            for (int i = 0; i < rootLayout.getChildren().size(); i++) {
+                ObservableList<Node> rootChilds = rootLayout.getChildren();
+                if (rootChilds.get(i) instanceof TabPane) {
+                    ObservableList<Tab> rootTabs = ((TabPane) rootChilds.get(i)).getTabs();
+                    for (Tab rootTab : rootTabs) {
+                        String tabId = "";
+                        if (rootTab.getId() != null)
+                            tabId = rootTab.getId();
+                        if (tabId.equals("tabSchedule")) {
+                            AnchorPane anchorPane = (AnchorPane) rootTab.getContent();
+                            anchorPane.getChildren().add(schedule);
+
+                            AnchorPane.setTopAnchor(schedule, 0.0);
+                            AnchorPane.setBottomAnchor(schedule, 0.0);
+                            AnchorPane.setLeftAnchor(schedule, 0.0);
+                            AnchorPane.setRightAnchor(schedule, 0.0);
+                        }
+                    }
+                }
+            }
+            // Даём контроллеру доступ к главному приложению.
+            ScheduleLayoutController controller = loader.getController();
             controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();

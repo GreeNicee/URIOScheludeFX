@@ -41,7 +41,11 @@
                 </TableView>
             <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <items>
-                  <ComboBox fx:id="comboBoxTeacher" prefWidth="200.0" promptText="Предмет" />
+                   <ComboBox fx:id="comboBoxTeacher" prefWidth="200.0" promptText="Предмет" visibleRowCount="100">
+                       <cursor>
+                           <Cursor fx:constant="HAND"/>
+                       </cursor>
+                   </ComboBox>
                   <Button fx:id="add" mnemonicParsing="false" onMouseClicked="#handleAddLesson" text="Добавить">
                      <cursor>
                         <Cursor fx:constant="HAND" />

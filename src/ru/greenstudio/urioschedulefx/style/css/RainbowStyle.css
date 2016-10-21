@@ -8,15 +8,15 @@
 }
 
 #del{
-    -fx-background-color: linear-gradient(#ff5400, #be1d00);
+    -fx-background-color: linear-gradient(to bottom, #f2b6b8 0%,#e85257 50%,#e50307 51%,#fa3600 75%,#c40003 100%);
 }
 
 #edit{
-    -fx-background-color: linear-gradient(#7ebcea, #2f4b8f);
+    -fx-background-color: linear-gradient(to bottom, #b6b9f2 0%,#525ae8 50%,#030ae5 51%,#3200fa 75%,#0007c4 100%);
 }
 
 #add{
-    -fx-background-color: linear-gradient(#54ff00, #1dbe00);
+    -fx-background-color: linear-gradient(to bottom, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%);
 }
 
 .button {
@@ -28,6 +28,20 @@
 .button:pressed, .button:default:hover:pressed {
   -fx-background-color: white;
   -fx-text-fill: #000000;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: linear-gradient(to bottom, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%);
+    -fx-text-fill: white;
+}
+
+.list-cell:even { /* <=== changed to even */
+    -fx-background-color: white;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: linear-gradient(to bottom, #aebcbf 0%,#6e7774 50%,#0a0e0a 51%,#0a0809 100%);
+    -fx-text-fill: white;
 }
 
 

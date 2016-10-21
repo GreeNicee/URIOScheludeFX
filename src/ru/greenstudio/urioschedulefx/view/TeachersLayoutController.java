@@ -100,6 +100,9 @@ public class TeachersLayoutController {
                 }
             }
 
+            comboBoxTeacher.hide();
+            comboBoxTeacher.setVisibleRowCount(100);
+            comboBoxTeacher.show();
         });
 
         textTeacher.setOnKeyPressed(event -> {
@@ -297,7 +300,6 @@ public class TeachersLayoutController {
             lessonTableView.getItems().clear();
             for (int i = 0; i < teacher.getLessons().size(); i++) {
                 Lesson lesson = teacher.getLessons().get(i);
-//                mainApp.getMaxLessonsData().get(i));
                 lessonTableView.getItems().add(i, lesson);
             }
         } else {
