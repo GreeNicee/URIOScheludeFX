@@ -1,8 +1,12 @@
 package ru.greenstudio.urioschedulefx.model;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@XmlRootElement(name = "day")
 public class Day {
+    @XmlElement(name = "name")
     private final String name;
     private List<Lecture> lectures;
 

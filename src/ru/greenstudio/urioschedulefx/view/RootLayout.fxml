@@ -1,51 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@../style/css/RainbowStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.greenstudio.urioschedulefx.view.RootLayoutController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
            <menus>
-               <Menu mnemonicParsing="false" text="Файл">
-                  <items>
-                      <Menu mnemonicParsing="false" text="Расписание">
-                         <items>
-                             <MenuItem mnemonicParsing="false" text="Открыть" />
-                             <MenuItem mnemonicParsing="false" text="Сохранить" />
-                             <MenuItem mnemonicParsing="false" text="Сохранить как" />
-                         </items>
-                      </Menu>
-                      <Menu mnemonicParsing="false" text="Экспорт">
-                         <items>
-                             <Menu mnemonicParsing="false" text="Word">
-                                <items>
-                                    <MenuItem mnemonicParsing="false" text="Для аудиторного фонда" />
-                                    <MenuItem mnemonicParsing="false" text="Для преподавателей" />
-                                    <MenuItem mnemonicParsing="false" text="Для студентов" />
-                                    <MenuItem mnemonicParsing="false" text="Для всех (3 файла)" />
-                                </items>
-                             </Menu>
-                             <Menu mnemonicParsing="false" text="Excel">
-                                <items>
-                                    <MenuItem mnemonicParsing="false" text="Для аудиторного фонда" />
-                                    <MenuItem mnemonicParsing="false" text="Для преподавателей" />
-                                    <MenuItem mnemonicParsing="false" text="Для студентов" />
-                                    <MenuItem mnemonicParsing="false" text="Для всех (3 файла)" />
-                                </items>
-                             </Menu>
-                         </items>
-                      </Menu>
-                  </items>
+               <Menu mnemonicParsing="false" text="Расписание">
+                   <items>
+                       <Menu mnemonicParsing="false" text="Word">
+                           <items>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordPrint"
+                                         text="Для аудиторного фонда"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordTeachers"
+                                         text="Для преподавателей"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordGroups" text="Для студентов"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordAll"
+                                         text="Для всех (3 файла)"/>
+                           </items>
+                       </Menu>
+                       <Menu mnemonicParsing="false" text="Excel">
+                           <items>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelPrint"
+                                         text="Для аудиторного фонда"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelTeachers"
+                                         text="Для преподавателей"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelGroups"
+                                         text="Для студентов"/>
+                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelAll"
+                                         text="Для всех (3 файла)"/>
+                           </items>
+                       </Menu>
+                   </items>
                </Menu>
                <Menu mnemonicParsing="false" text="Справка">
                   <items>
-                      <MenuItem mnemonicParsing="false" text="О программе" />
-                      <MenuItem mnemonicParsing="false" text="Об авторе" />
+                      <MenuItem mnemonicParsing="false" onAction="#handleInfoApp" text="О программе"/>
+                      <MenuItem mnemonicParsing="false" onAction="#handleInfoAuthor" text="Об авторе"/>
                   </items>
                </Menu>
-               <Menu mnemonicParsing="false" text="Выход" />
+               <Menu mnemonicParsing="false" onAction="#handleExit" text="Выход"/>
            </menus>
         </MenuBar>
     </top>

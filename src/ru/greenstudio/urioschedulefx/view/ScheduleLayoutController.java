@@ -1,7 +1,6 @@
 package ru.greenstudio.urioschedulefx.view;
 
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,9 +10,7 @@ import javafx.util.Callback;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
-import ru.greenstudio.urioschedulefx.model.Day;
-import ru.greenstudio.urioschedulefx.model.Lecture;
-import ru.greenstudio.urioschedulefx.model.Schedule;
+import ru.greenstudio.urioschedulefx.model.*;
 
 import java.util.List;
 
@@ -28,6 +25,8 @@ public class ScheduleLayoutController {
     private TableColumn<Lecture, String> cabsColumn;
     @FXML
     private TableColumn<Lecture, String> lessonsColumn;
+    @FXML
+    private TableColumn<Lecture, String> teacherColumn;
     @FXML
     private ChoiceBox<String> comboGroups;
     @FXML
@@ -47,6 +46,8 @@ public class ScheduleLayoutController {
         for (int i = 0; i < mainApp.getGroupsData().size(); i++) {
             comboGroups.getItems().add(i, mainApp.getGroupsData().get(i).getName());
         }
+
+        comboGroups.setOnAction(event -> showDayDetails(listDays.getSelectionModel().getSelectedItem()));
 
         listDays.getItems().setAll(mainApp.getSchedule().getDays());
 
@@ -70,14 +71,17 @@ public class ScheduleLayoutController {
             }
         });
 
-        lectureColumn.setCellValueFactory(cellData -> cellData.getValue().getNumName().asObject());
+        lectureColumn.setCellValueFactory(cellData -> cellData.getValue().numNameProperty().asObject());
         lectureColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
 
-        cabsColumn.setCellValueFactory(cellData -> cellData.getValue().getCab());
+        cabsColumn.setCellValueFactory(cellData -> cellData.getValue().cabProperty());
         cabsColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
 
-        lessonsColumn.setCellValueFactory(cellData -> cellData.getValue().getLesson());
+        lessonsColumn.setCellValueFactory(cellData -> cellData.getValue().lessonProperty());
         lessonsColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
+
+        teacherColumn.setCellValueFactory(cellData -> cellData.getValue().teacherProperty());
+        teacherColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
 
         showDayDetails(null);
         listDays.getSelectionModel().selectedItemProperty().addListener(
@@ -110,25 +114,81 @@ public class ScheduleLayoutController {
         String comboItem = comboCabs.getSelectionModel().getSelectedItem();
 
         for (Lecture lecture : lectures) {
-            if (lecture.getNumName().get() == tableLectures.getSelectionModel().getSelectedItem().getNumName().get() &&
+            if (lecture.getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName() &&
                     lecture.getGroup().equals(comboGroups.getSelectionModel().getSelectedItem())) {
-                lecture.setCab(new SimpleStringProperty(comboItem));
-                tableLectures.getSelectionModel().getSelectedItem().setCab(
-                        new SimpleStringProperty(comboItem));
+                lecture.setCab(comboItem);
+                tableLectures.getSelectionModel().getSelectedItem().setCab(comboItem);
                 break;
             }
         }
 
         tableLectures.refresh();
         tableLectures.getSelectionModel().clearSelection();
-        //TODO КРИТ, котоырй не влияет ни на что)
-        comboCabs.getSelectionModel().clearSelection();
-        comboCabs.getItems().clear();
+        Platform.runLater(() -> {
+            comboLessons.getSelectionModel().clearSelection();
+            comboLessons.getItems().clear();
+            comboCabs.getSelectionModel().clearSelection();
+            comboCabs.getItems().clear();
+        });
     }
 
     @FXML
     private void handleComboLessonsClick() {
+        if (comboLessons.getSelectionModel().getSelectedItem() == null)
+            return;
+        List<Lecture> lectures = mainApp.getSchedule().getDays().get(listDays.getSelectionModel().getSelectedIndex()).getLectures();
+        String comboItem = comboLessons.getSelectionModel().getSelectedItem();
 
+        for (Lecture lecture : lectures) {
+            if (lecture.getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName() &&
+                    lecture.getGroup().equals(comboGroups.getSelectionModel().getSelectedItem())) {
+                lecture.setLesson(comboItem.substring(0, comboItem.indexOf('|') - 1));
+                tableLectures.getSelectionModel().getSelectedItem().
+                        setLesson(comboItem.substring(0, comboItem.indexOf('|') - 1));
+
+                lecture.setTeacher(comboItem.substring(comboItem.indexOf('|') + 2));
+                tableLectures.getSelectionModel().getSelectedItem().setTeacher(comboItem.substring(comboItem.indexOf('|') + 2));
+                break;
+            }
+        }
+
+        for (int i = 0; i < mainApp.getSchedule().getActualGroups().size(); i++) {
+            if (mainApp.getSchedule().getActualGroups().get(i).getName().equals(comboGroups.getSelectionModel().getSelectedItem())) {
+                for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
+                    if (mainApp.getLessonsListData().get(j).equals(
+                            comboItem.substring(0, comboItem.indexOf('|') - 1))) {
+                        mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().set(j,
+                                mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) + 2);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        for (int i = 0; i < mainApp.getSchedule().getActualTeachers().size(); i++) {
+            if (mainApp.getSchedule().getActualTeachers().get(i).getName().equals(
+                    comboItem.substring(comboItem.indexOf('|') + 2))) {
+                for (int j = 0; j < mainApp.getSchedule().getActualTeachers().get(i).getLessons().size(); j++) {
+                    if (mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getName().equals(
+                            comboItem.substring(0, comboItem.indexOf('|') - 1))) {
+                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setHours(
+                                mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours() + 2);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        tableLectures.refresh();
+        tableLectures.getSelectionModel().clearSelection();
+        Platform.runLater(() -> {
+            comboLessons.getSelectionModel().clearSelection();
+            comboLessons.getItems().clear();
+            comboCabs.getSelectionModel().clearSelection();
+            comboCabs.getItems().clear();
+        });
     }
 
     @FXML
@@ -144,8 +204,8 @@ public class ScheduleLayoutController {
 
         for (Lecture lecture : lectures) {
             for (int j = 0; j < dataCabs.size(); j++) {
-                if (lecture.getCab().get().equals(dataCabs.get(j)) && lecture.getNumName().get()
-                        == tableLectures.getSelectionModel().getSelectedItem().getNumName().get()) {
+                if (lecture.getCab().equals(dataCabs.get(j)) && lecture.getNumName()
+                        == tableLectures.getSelectionModel().getSelectedItem().getNumName()) {
                     dataCabs.remove(j);
                     break;
                 }
@@ -158,8 +218,111 @@ public class ScheduleLayoutController {
             if (schedule.getMaxGroupLessons().get(i).getHours() > schedule.getActualGroupLessons().get(i).getHours())
                 dataLessons.add(schedule.getMaxGroupLessons().get(i).getName());
         }
+        ObservableList<Teacher> dataTeachers = FXCollections.observableArrayList();
+        ObservableList<Teacher> teachersData = mainApp.getTeachersData();
 
-        comboLessons.setItems(dataLessons);
+        for (Teacher teacher : teachersData) {
+            if (teacher.getLessons().size() > 0)
+                dataTeachers.add(new Teacher(teacher.getName(), FXCollections.observableArrayList()));
+            for (int j = 0; j < teacher.getLessons().size(); j++) {
+                if (teacher.getLessons().get(j).getHours() > 0) {
+                    dataTeachers.get(dataTeachers.size() - 1).getLessons().
+                            add(teacher.getLessons().get(j));
+                }
+            }
+        }
+
+        ObservableList<String> dataNiceLessons = FXCollections.observableArrayList();
+        for (String dataLesson : dataLessons) {
+            for (Teacher dataTeacher : dataTeachers) {
+                for (int k = 0; k < dataTeacher.getLessons().size(); k++) {
+                    if (dataLesson.equals(dataTeacher.getLessons().get(k).getName())) {
+                        dataNiceLessons.add(dataTeacher.getLessons().get(k).getName() + " | " +
+                                dataTeacher.getName());
+                    }
+                }
+            }
+        }
+
+        for (Lecture lecture : lectures) {
+            for (int j = 0; j < dataNiceLessons.size(); j++) {
+                System.out.println(dataNiceLessons.get(j));
+                if (lecture.getTeacher().equals(dataNiceLessons.get(j).substring(dataNiceLessons.get(j).indexOf('|') + 2)
+                ) && lecture.getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName()) {
+                    dataNiceLessons.remove(j);
+                    break;
+                }
+            }
+        }
+
+        Group groupActual = new Group("", FXCollections.observableArrayList(), FXCollections.observableArrayList());
+        Group groupMax = new Group("", FXCollections.observableArrayList(), FXCollections.observableArrayList());
+
+        for (int i = 0; i < mainApp.getSchedule().getMaxGroups().size(); i++) {
+            if (comboGroups.getSelectionModel().getSelectedItem().equals(mainApp.getSchedule().getMaxGroups().get(i).getName())) {
+                groupActual = new Group(
+                        mainApp.getSchedule().getActualGroups().get(i).getName(),
+                        mainApp.getLessonsListData(),
+                        mainApp.getSchedule().getActualGroups().get(i).getLessonsHours()
+                );
+
+                groupMax = new Group(
+                        mainApp.getSchedule().getMaxGroups().get(i).getName(),
+                        mainApp.getLessonsListData(),
+                        mainApp.getSchedule().getMaxGroups().get(i).getLessonsHours()
+                );
+                break;
+            }
+        }
+        for (int i = 0; i < dataNiceLessons.size(); i++) {
+            boolean boo = false;
+            int k = 0;
+            for (int j = 0; j < groupActual.getLessonsNames().size(); j++) {
+                String lessName = dataNiceLessons.get(i).substring(0, dataNiceLessons.get(i).indexOf("|") - 1);
+
+                if (lessName.equals(groupActual.getLessonsNames().get(j))) {
+                    if (groupActual.getLessonsHours().get(j) >= groupMax.getLessonsHours().get(j) ||
+                            groupMax.getLessonsHours().get(j) == 0) {
+                        boo = true;
+                        k = i;
+                        break;
+                    }
+                    boo = false;
+                    break;
+                } else {
+                    boo = true;
+                    k = i;
+                }
+            }
+            if (boo)
+                dataNiceLessons.remove(k);
+        }
+
+        for (int i = 0; i < dataNiceLessons.size(); i++) {
+            boolean boo = false;
+            int k = 0;
+            for (int j = 0; j < schedule.getMaxTeachers().size(); j++) {
+                String teacherName = dataNiceLessons.get(i).substring(dataNiceLessons.get(i).indexOf("|") + 2);
+                String lessName = dataNiceLessons.get(i).substring(0, dataNiceLessons.get(i).indexOf("|") - 1);
+
+                if (teacherName.equals(schedule.getMaxTeachers().get(j).getName())) {
+                    for (int l = 0; l < schedule.getMaxTeachers().get(j).getLessons().size(); l++) {
+                        if (schedule.getActualTeachers().get(j).getLessons().get(l).getHours() >=
+                                schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() ||
+                                schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() == 0) {
+                            boo = true;
+                            k = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (boo)
+                dataNiceLessons.remove(k);
+        }
+
+
+        comboLessons.setItems(dataNiceLessons);
     }
 
 
@@ -189,10 +352,9 @@ public class ScheduleLayoutController {
         }
 
         mainApp.getSchedule().getDays().get(listIndex).getLectures().
-                add(new Lecture(new SimpleIntegerProperty(index), groupName, "",
-                        new SimpleStringProperty(""), new SimpleStringProperty("")));
-        tableLectures.getItems().add(new Lecture(new SimpleIntegerProperty(index), groupName, "",
-                new SimpleStringProperty(""), new SimpleStringProperty("")));
+                add(new Lecture(index, groupName, "",
+                        "", ""));
+        tableLectures.getItems().add(new Lecture(index, groupName, "", "", ""));
         tableLectures.getSelectionModel().clearSelection();
     }
 
@@ -216,7 +378,7 @@ public class ScheduleLayoutController {
 
         List<Lecture> lectures = mainApp.getSchedule().getDays().get(indexDay).getLectures();
         for (int i = 0; i < lectures.size(); i++) {
-            if (lectures.get(i).getNumName().get() == indexLecture && lectures.get(i).getGroup().equals(groupName)) {
+            if (lectures.get(i).getNumName() == indexLecture && lectures.get(i).getGroup().equals(groupName)) {
                 lectures.remove(i);
                 break;
             }
@@ -228,7 +390,7 @@ public class ScheduleLayoutController {
 
     @FXML
     private void handleRefreshData() {
-
+        System.out.println(mainApp.getSchedule());
     }
 
     @FXML

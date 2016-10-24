@@ -40,4 +40,12 @@ public class Teacher {
     public void setName(String name) {
         this.name.set(name);
     }
+
+    @Override
+    public String toString() {
+        return "\nTeacher{" +
+                "name=" + name +
+                ", lessons=" + lessons +
+                '}';
+    }
 }

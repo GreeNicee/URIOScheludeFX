@@ -13,18 +13,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.greenstudio.urioschedulefx.model.*;
-import ru.greenstudio.urioschedulefx.view.GroupsLayoutController;
-import ru.greenstudio.urioschedulefx.view.LessonsAndCabsController;
-import ru.greenstudio.urioschedulefx.view.ScheduleLayoutController;
-import ru.greenstudio.urioschedulefx.view.TeachersLayoutController;
+import ru.greenstudio.urioschedulefx.view.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static ru.greenstudio.urioschedulefx.Utils.IO.Files.loadDataFromFile;
-import static ru.greenstudio.urioschedulefx.Utils.IO.Files.saveDataToFile;
+import static ru.greenstudio.urioschedulefx.Utils.IO.Files.*;
 
 public class MainApp extends Application {
     private Stage primaryStage;
@@ -45,7 +41,7 @@ public class MainApp extends Application {
     private ObservableList<Lesson> lessonsData = FXCollections.observableArrayList();
     private ObservableList<Teacher> teachersData = FXCollections.observableArrayList();
 
-    private ArrayList<String> lectureNames = new ArrayList<String>();
+    private ArrayList<String> lectureNames = new ArrayList<>();
 
     public ArrayList<String> getLectureNames() {
         return lectureNames;
@@ -60,22 +56,12 @@ public class MainApp extends Application {
         lectureNames.add("Шестая пара");
         lectureNames.add("Седьмая пара");
 
-        schedule = new Schedule("Тестовое расписание", FXCollections.observableArrayList(), getMaxLessonsData(), getLessonsData());
-        schedule.getDays().add(new Day("Понедельник", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Вторник", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Среда", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Четверг", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Пятница", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Суббота", new ArrayList<Lecture>()));
-        schedule.getDays().add(new Day("Воскресенье", new ArrayList<Lecture>()));
-        schedule.setMaxGroupLessons(maxLessonsData);//group
-
         lessonsListData.setAll("LOL");
         cabsListData.setAll("LOL");
         groupsData.setAll(new Group("LOL",
                 FXCollections.observableArrayList("lol", "lol"),
                 FXCollections.observableArrayList(0, 0)));
-        Teacher teacher = new Teacher("писька", new ArrayList<Lesson>());
+        Teacher teacher = new Teacher("писька", new ArrayList<>());
         teacher.getLessons().add(0, new Lesson("asd", 12));
         teacher.getLessons().add(0, new Lesson("dsa", 0));
 
@@ -100,6 +86,19 @@ public class MainApp extends Application {
         setMaxLessonsData();
         setLessonsData();
 
+        schedule = new Schedule("Тестовое расписание", FXCollections.observableArrayList());
+        schedule.getDays().add(new Day("Понедельник", new ArrayList<>()));
+        schedule.getDays().add(new Day("Вторник", new ArrayList<>()));
+        schedule.getDays().add(new Day("Среда", new ArrayList<>()));
+        schedule.getDays().add(new Day("Четверг", new ArrayList<>()));
+        schedule.getDays().add(new Day("Пятница", new ArrayList<>()));
+        schedule.getDays().add(new Day("Суббота", new ArrayList<>()));
+        schedule.getDays().add(new Day("Воскресенье", new ArrayList<>()));
+        schedule.setMaxGroupLessons(maxLessonsData);//groups
+        schedule.setMaxTeacherLessons(lessonsData);//teachers
+        schedule.setMaxGroups(groupsData);
+        schedule.setMaxTeachers(teachersData);
+
         schedule.setActualGroupLessons(FXCollections.observableArrayList());
         for (int i = 0; i < schedule.getMaxGroupLessons().size(); i++) {
             schedule.getActualGroupLessons().add(new Lesson(schedule.getMaxGroupLessons().get(i).getName(), 0));
@@ -109,6 +108,8 @@ public class MainApp extends Application {
         for (int i = 0; i < schedule.getMaxTeacherLessons().size(); i++) {
             schedule.getActualTeacherLessons().add(new Lesson(schedule.getMaxTeacherLessons().get(i).getName(), 0));
         }
+
+        loadSchedule(schedule);
 
         System.out.println("MaxLessonsData");
         for (Lesson aLessonsData : maxLessonsData) {
@@ -241,7 +242,7 @@ public class MainApp extends Application {
     @Override
     public void stop() {
         System.out.println("Stage is closing");
-        saveDataToFile(lessonsListData, cabsListData, groupsData, teachersData);
+        saveDataToFile(lessonsListData, cabsListData, groupsData, teachersData, schedule);
     }
 
     private void initRootLayout() {
@@ -256,6 +257,9 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
 
             primaryStage.show();
+            // Даём контроллеру доступ к главному приложению.
+            RootLayoutController controller = loader.getController();
+            controller.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }

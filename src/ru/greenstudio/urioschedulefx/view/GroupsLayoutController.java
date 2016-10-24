@@ -142,14 +142,38 @@ public class GroupsLayoutController {
             selectedLesson.setHours(lessonHours);
             mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                     getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
-            lessonTableView.getSelectionModel().clearSelection();
-            textLesson.setText("");
-            textLesson.requestFocus();
+
+            lessonHours = oldLesson.getHours();
+            for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+                for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                    if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(
+                            lessonTableView.getSelectionModel().getSelectedItem().getName())) {
+                        if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() > 0) {
+                            if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() >= lessonHours) {
+                                mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
+                                        mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - lessonHours);
+                                lessonHours = 0;
+                            } else {
+                                lessonHours -= mainApp.getTeachersData().get(i).getLessons().get(j).getHours();
+                                mainApp.getTeachersData().get(i).getLessons().get(j).setHours(0);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+                if (lessonHours <= 0)
+                    break;
+            }
 
             Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
             ObservableList<Lesson> lessonsMaxData = mainApp.getMaxLessonsData();
             ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
             checkLessonsData(selectedLesson, newLesson, lessonsMaxData, lessonsData);
+
+            lessonTableView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }

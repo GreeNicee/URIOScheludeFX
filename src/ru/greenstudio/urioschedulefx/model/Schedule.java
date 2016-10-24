@@ -13,7 +13,13 @@ public class Schedule {
     private List<Lesson> maxTeacherLessons;
     private List<Lesson> actualTeacherLessons;
 
-    public Schedule(String name, List<Day> days, List<Lesson> maxGroupLessons, List<Lesson> maxTeacherLessons) {
+    private List<Group> maxGroups;
+    private List<Group> actualGroups;
+
+    private List<Teacher> maxTeachers;
+    private List<Teacher> actualTeachers;
+
+    public Schedule(String name, List<Day> days) {
         this.name = name;
         this.days = days;
         this.maxGroupLessons = maxGroupLessons;
@@ -24,7 +30,7 @@ public class Schedule {
     }
 
     public Schedule() {
-        this(null, null, null, null);
+        this(null, null);
     }
 
     public String getName() {
@@ -75,6 +81,38 @@ public class Schedule {
         this.actualTeacherLessons = actualTeacherLessons;
     }
 
+    public List<Group> getMaxGroups() {
+        return maxGroups;
+    }
+
+    public void setMaxGroups(List<Group> maxGroups) {
+        this.maxGroups = maxGroups;
+    }
+
+    public List<Group> getActualGroups() {
+        return actualGroups;
+    }
+
+    public void setActualGroups(List<Group> actualGroups) {
+        this.actualGroups = actualGroups;
+    }
+
+    public List<Teacher> getMaxTeachers() {
+        return maxTeachers;
+    }
+
+    public void setMaxTeachers(List<Teacher> maxTeachers) {
+        this.maxTeachers = maxTeachers;
+    }
+
+    public List<Teacher> getActualTeachers() {
+        return actualTeachers;
+    }
+
+    public void setActualTeachers(List<Teacher> actualTeachers) {
+        this.actualTeachers = actualTeachers;
+    }
+
     @Override
     public String toString() {
         return "Schedule{" +
@@ -84,6 +122,10 @@ public class Schedule {
                 ",\n actualGroupLessons=" + actualGroupLessons +
                 ",\n maxTeacherLessons=" + maxTeacherLessons +
                 ",\n actualTeacherLessons=" + actualTeacherLessons +
+                ",\n maxGroups= " + maxGroups +
+                ",\n actualGroups= " + actualGroups +
+                ",\n maxTeachers= " + maxTeachers +
+                ",\n actualTeachers= " + actualTeachers +
                 '}';
     }
 }

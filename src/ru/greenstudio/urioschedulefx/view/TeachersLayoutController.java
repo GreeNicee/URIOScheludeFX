@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
@@ -16,6 +17,7 @@ import ru.greenstudio.urioschedulefx.model.Teacher;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInTeacherData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
 import static ru.greenstudio.urioschedulefx.Utils.Funcs.checkLessonsData;
+import static ru.greenstudio.urioschedulefx.Utils.Funcs.checkNumeric;
 import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 
 public class TeachersLayoutController {
@@ -112,9 +114,17 @@ public class TeachersLayoutController {
         });
 
         textLessonHours.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)) {
-                handleEditLesson();
-            }
+            if (event.getCode().equals(KeyCode.ENTER))
+                handleEditLessonHours();
+        });
+        textLessonHours.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String character = event.getCharacter();
+
+            if (!checkNumeric(character))
+                event.consume();
+            else if (Integer.parseInt(textLessonHours.getText() + event.getCharacter()) >
+                    Integer.parseInt(labelLessonHours.getText().substring(labelLessonHours.getText().indexOf(':') + 2)))
+                event.consume();
         });
     }
 
@@ -259,8 +269,8 @@ public class TeachersLayoutController {
             Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
             int lessonHours = 0;
             selectedLesson.setHours(lessonHours);
-            mainApp.getGroupsData().get(teachersListView.getSelectionModel().getSelectedIndex()).
-                    getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+            mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
+                    getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(selectedLesson.getHours());
             lessonTableView.getSelectionModel().clearSelection();
             textLessonHours.setText("");
             textLessonHours.requestFocus();
@@ -271,6 +281,7 @@ public class TeachersLayoutController {
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }
+        System.out.println(mainApp.getTeachersData());
     }
 
     @FXML
@@ -286,11 +297,12 @@ public class TeachersLayoutController {
                     break;
                 }
             }
-            if (index != -1) {
-                int maxHours = mainApp.getMaxLessonsData().get(index).getHours() - mainApp.getLessonsData().get(index).getHours();
+            if (index > -1) {
+                int maxHours = mainApp.getMaxLessonsData().get(index).getHours() -
+                        mainApp.getLessonsData().get(index).getHours();
                 maxHours += selectedLesson.getHours();
                 labelLessonHours.setText("MAX: " + maxHours);
-            }
+            } else labelLessonHours.setText("MAX: ");
             textLessonHours.requestFocus();
         }
     }
