@@ -10,7 +10,7 @@ public class ScheduleWrapper {
 
     Schedule schedule;
 
-    @XmlElement(name = "scheduledsfsdf")
+    @XmlElement(name = "schedule")
     public Schedule getSchedule() {
         return schedule;
     }

@@ -1,13 +1,10 @@
 package ru.greenstudio.urioschedulefx.view;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import ru.greenstudio.urioschedulefx.MainApp;
-import ru.greenstudio.urioschedulefx.model.Group;
-import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInStringData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -114,9 +111,9 @@ public class LessonsAndCabsController {
             textLesson.setText("");
             textLesson.requestFocus();
 
-            ObservableList<Group> groups = mainApp.getGroupsData();
-            for (Group group : groups) {
-                group.getLessonsHours().add(0);
+            for (int i = 0; i < mainApp.getGroupsData().size(); i++) {
+                mainApp.getGroupsData().get(i).getLessonsHours().add(0);
+                mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().add(0);
             }
         }
     }
@@ -128,10 +125,28 @@ public class LessonsAndCabsController {
             if (isTextFieldOk(textLesson)) {
                 if (!alreadyInStringData(mainApp.getLessonsListData(), textLesson.getText(), mainApp.getPrimaryStage(), "предмет")) {
                     String lesson = textLesson.getText();
+                    String oldLesson = lessonListView.getSelectionModel().getSelectedItem();
                     mainApp.getLessonsListData().set(lessonListView.getSelectionModel().getSelectedIndex(), lesson);
                     lessonListView.getSelectionModel().clearSelection();
                     textLesson.setText("");
                     textLesson.requestFocus();
+
+                    for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+                        for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                            if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(oldLesson)) {
+                                mainApp.getTeachersData().get(i).getLessons().get(j).setName(lesson);
+                                mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setName(lesson);
+                                break;
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                        for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                            if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getLesson().equals(oldLesson))
+                                mainApp.getSchedule().getDays().get(i).getLectures().get(j).setLesson(lesson);
+                        }
+                    }
                 }
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
@@ -144,31 +159,32 @@ public class LessonsAndCabsController {
         int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
         String selectedItem = lessonListView.getSelectionModel().getSelectedItem();
         if (selectedIndex >= 0) {
-            ObservableList<Group> groups = mainApp.getGroupsData();
-            for (Group group : groups) {
+            for (int i = 0; i < mainApp.getGroupsData().size(); i++) {
                 for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
                     if (mainApp.getLessonsListData().get(j).equals(selectedItem)) {
-                        group.getLessonsHours().remove(j);
+                        mainApp.getGroupsData().get(i).getLessonsHours().remove(j);
+                        mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().remove(j);
                         break;
                     }
                 }
             }
 
-            ObservableList<Teacher> teachers = mainApp.getTeachersData();
-            for (Teacher teacher : teachers) {
-                for (int j = 0; j < teacher.getLessons().size(); j++) {
-                    if (teacher.getLessons().get(j).getName().equals(selectedItem)) {
-                        teacher.getLessons().remove(j);
+            for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+                for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                    if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(selectedItem)) {
+                        mainApp.getTeachersData().get(i).getLessons().remove(j);
+                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().remove(j);
                         break;
                     }
                 }
             }
 
-            for (int i = 0; i < mainApp.getMaxLessonsData().size(); i++) {
-                if (mainApp.getMaxLessonsData().get(i).getName().equals(selectedItem)) {
-                    mainApp.getLessonsData().remove(i);
-                    mainApp.getMaxLessonsData().remove(i);
-                    break;
+            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                    if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getLesson().equals(selectedItem)) {
+                        mainApp.getSchedule().getDays().get(i).getLectures().get(j).setLesson("");
+                        mainApp.getSchedule().getDays().get(i).getLectures().get(j).setTeacher("");
+                    }
                 }
             }
 

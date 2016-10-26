@@ -47,7 +47,14 @@ public class ScheduleLayoutController {
             comboGroups.getItems().add(i, mainApp.getGroupsData().get(i).getName());
         }
 
-        comboGroups.setOnAction(event -> showDayDetails(listDays.getSelectionModel().getSelectedItem()));
+        comboGroups.setOnAction(event ->
+                showDayDetails(listDays.getSelectionModel().getSelectedItem()));
+        comboGroups.setOnMouseClicked(event -> {
+            comboGroups.getItems().clear();
+            for (int i = 0; i < mainApp.getGroupsData().size(); i++) {
+                comboGroups.getItems().add(i, mainApp.getGroupsData().get(i).getName());
+            }
+        });
 
         listDays.getItems().setAll(mainApp.getSchedule().getDays());
 
@@ -139,46 +146,83 @@ public class ScheduleLayoutController {
         List<Lecture> lectures = mainApp.getSchedule().getDays().get(listDays.getSelectionModel().getSelectedIndex()).getLectures();
         String comboItem = comboLessons.getSelectionModel().getSelectedItem();
 
+        String lessonName = comboItem.substring(0, comboItem.indexOf('|') - 1);
+        String teacherName = comboItem.substring(comboItem.indexOf('|') + 2);
+        String oldLessonName = "";
+        String oldTeacherName = "";
+
         for (Lecture lecture : lectures) {
             if (lecture.getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName() &&
                     lecture.getGroup().equals(comboGroups.getSelectionModel().getSelectedItem())) {
-                lecture.setLesson(comboItem.substring(0, comboItem.indexOf('|') - 1));
-                tableLectures.getSelectionModel().getSelectedItem().
-                        setLesson(comboItem.substring(0, comboItem.indexOf('|') - 1));
 
-                lecture.setTeacher(comboItem.substring(comboItem.indexOf('|') + 2));
-                tableLectures.getSelectionModel().getSelectedItem().setTeacher(comboItem.substring(comboItem.indexOf('|') + 2));
+                if (lecture.getLesson() != null)
+                    oldLessonName = lecture.getLesson();
+                else System.out.println("lesson not null");
+                if (lecture.getTeacher() != null)
+                    oldTeacherName = lecture.getTeacher();
+                else System.out.println("teacher not null");
+
+
+                lecture.setLesson(lessonName);
+                tableLectures.getSelectionModel().getSelectedItem().
+                        setLesson(lessonName);
+                lecture.setTeacher(teacherName);
+                tableLectures.getSelectionModel().getSelectedItem().setTeacher(teacherName);
                 break;
             }
         }
 
         for (int i = 0; i < mainApp.getSchedule().getActualGroups().size(); i++) {
+            boolean boo1 = false, boo2 = false;
             if (mainApp.getSchedule().getActualGroups().get(i).getName().equals(comboGroups.getSelectionModel().getSelectedItem())) {
                 for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
-                    if (mainApp.getLessonsListData().get(j).equals(
-                            comboItem.substring(0, comboItem.indexOf('|') - 1))) {
+                    if (mainApp.getLessonsListData().get(j).equals(lessonName)) {
                         mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().set(j,
                                 mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) + 2);
-                        break;
+                        boo1 = true;
                     }
+
+                    if (oldLessonName.equals("")) {
+                        boo2 = true;
+                    } else if (mainApp.getLessonsListData().get(j).equals(oldLessonName)) {
+                        mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().set(j,
+                                mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) - 2);
+                        boo2 = true;
+                    }
+                    if (boo1 && boo2)
+                        break;
                 }
-                break;
+                if (boo1 && boo2)
+                    break;
             }
         }
 
         for (int i = 0; i < mainApp.getSchedule().getActualTeachers().size(); i++) {
-            if (mainApp.getSchedule().getActualTeachers().get(i).getName().equals(
-                    comboItem.substring(comboItem.indexOf('|') + 2))) {
+            boolean boo1 = false, boo2 = false;
+            if (mainApp.getSchedule().getActualTeachers().get(i).getName().equals(teacherName)) {
                 for (int j = 0; j < mainApp.getSchedule().getActualTeachers().get(i).getLessons().size(); j++) {
-                    if (mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getName().equals(
-                            comboItem.substring(0, comboItem.indexOf('|') - 1))) {
+                    if (mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getName().equals(lessonName)) {
                         mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setHours(
                                 mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours() + 2);
-                        break;
+                        boo1 = true;
                     }
                 }
-                break;
             }
+
+            if (teacherName.equals("")) {
+                boo2 = true;
+            } else if (mainApp.getSchedule().getActualTeachers().get(i).getName().equals(oldTeacherName)) {
+                for (int j = 0; j < mainApp.getSchedule().getActualTeachers().get(i).getLessons().size(); j++) {
+                    if (mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getName().equals(oldLessonName)) {
+                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setHours(
+                                mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours() - 2);
+                        boo2 = true;
+                    }
+                }
+            }
+
+            if (boo1 && boo2)
+                break;
         }
 
         tableLectures.refresh();
@@ -193,8 +237,11 @@ public class ScheduleLayoutController {
 
     @FXML
     private void handleTableLecturesClick() {
+        if (tableLectures.getSelectionModel().getSelectedItem() == null)
+            return;
         Schedule schedule = mainApp.getSchedule();
-        List<Lecture> lectures = mainApp.getSchedule().getDays().get(listDays.getSelectionModel().getSelectedIndex()).getLectures();
+        List<Lecture> lectures = mainApp.getSchedule().getDays().get(
+                listDays.getSelectionModel().getSelectedIndex()).getLectures();
 
         ObservableList<String> dataCabs = FXCollections.observableArrayList();
         for (int i = 0; i < mainApp.getCabsListData().size(); i++) {
@@ -214,10 +261,19 @@ public class ScheduleLayoutController {
         comboCabs.setItems(dataCabs);
 
         ObservableList<String> dataLessons = FXCollections.observableArrayList();
-        for (int i = 0; i < schedule.getMaxGroupLessons().size(); i++) {
-            if (schedule.getMaxGroupLessons().get(i).getHours() > schedule.getActualGroupLessons().get(i).getHours())
-                dataLessons.add(schedule.getMaxGroupLessons().get(i).getName());
+
+        for (int i = 0; i < mainApp.getSchedule().getMaxGroups().size(); i++) {
+            if (mainApp.getSchedule().getMaxGroups().get(i).getName().equals(comboGroups.getSelectionModel().getSelectedItem())) {
+                for (int j = 0; j < mainApp.getSchedule().getMaxGroups().get(i).getLessonsHours().size(); j++) {
+                    if (mainApp.getSchedule().getMaxGroups().get(i).getLessonsHours().get(j) >
+                            mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) &&
+                            mainApp.getSchedule().getMaxGroups().get(i).getLessonsHours().get(j) > 0)
+                        dataLessons.add(mainApp.getLessonsListData().get(j));
+                }
+                break;
+            }
         }
+
         ObservableList<Teacher> dataTeachers = FXCollections.observableArrayList();
         ObservableList<Teacher> teachersData = mainApp.getTeachersData();
 
@@ -244,13 +300,17 @@ public class ScheduleLayoutController {
             }
         }
 
-        for (Lecture lecture : lectures) {
+        for (int i = 0; i < lectures.size(); i++) {
             for (int j = 0; j < dataNiceLessons.size(); j++) {
-                System.out.println(dataNiceLessons.get(j));
-                if (lecture.getTeacher().equals(dataNiceLessons.get(j).substring(dataNiceLessons.get(j).indexOf('|') + 2)
-                ) && lecture.getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName()) {
-                    dataNiceLessons.remove(j);
-                    break;
+                if (lectures.get(i).getNumName() != tableLectures.getSelectionModel().getSelectedIndex() &&
+                        !lectures.get(i).getGroup().equals(
+                                tableLectures.getSelectionModel().getSelectedItem().getGroup())) {
+                    if (lectures.get(i).getTeacher().equals(
+                            dataNiceLessons.get(j).substring(dataNiceLessons.get(j).indexOf('|') + 2)
+                    ) && lectures.get(i).getNumName() == tableLectures.getSelectionModel().getSelectedItem().getNumName()) {
+                        dataNiceLessons.remove(j);
+                        --j;
+                    }
                 }
             }
         }
@@ -373,6 +433,34 @@ public class ScheduleLayoutController {
             return;
         }
         String groupName = comboGroups.getSelectionModel().getSelectedItem();
+        String teacherName = tableLectures.getItems().get(indexLecture - 1).getTeacher();
+        String lessonName = tableLectures.getItems().get(indexLecture - 1).getLesson();
+
+        for (int i = 0; i < mainApp.getSchedule().getActualGroups().size(); i++) {
+            if (mainApp.getSchedule().getActualGroups().get(i).getName().equals(groupName)) {
+                for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
+                    if (mainApp.getLessonsListData().get(j).equals(lessonName)) {
+                        mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().set(j,
+                                mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) - 2);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
+        for (int i = 0; i < mainApp.getSchedule().getActualTeachers().size(); i++) {
+            if (mainApp.getSchedule().getActualTeachers().get(i).getName().equals(teacherName)) {
+                for (int j = 0; j < mainApp.getSchedule().getActualTeachers().get(i).getLessons().size(); j++) {
+                    if (mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getName().equals(lessonName)) {
+                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setHours(
+                                mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours() - 2);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
 
         tableLectures.getItems().remove(indexLecture - 1);
 
@@ -385,7 +473,6 @@ public class ScheduleLayoutController {
         }
 
         tableLectures.getSelectionModel().clearSelection();
-        System.out.println(mainApp.getSchedule());
     }
 
     @FXML

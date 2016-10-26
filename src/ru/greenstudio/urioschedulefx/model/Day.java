@@ -1,5 +1,7 @@
 package ru.greenstudio.urioschedulefx.model;
 
+import javafx.collections.FXCollections;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -11,7 +13,7 @@ public class Day {
     private List<Lecture> lectures;
 
     public Day() {
-        this(null, null);
+        this("", FXCollections.observableArrayList());
     }
 
     public Day(String name, List<Lecture> lectures) {

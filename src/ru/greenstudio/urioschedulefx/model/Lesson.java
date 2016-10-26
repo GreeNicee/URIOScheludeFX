@@ -10,7 +10,7 @@ public class Lesson {
     private final IntegerProperty hours;
 
     public Lesson() {
-        this(null,0);
+        this("", 0);
     }
 
     /**

@@ -3,7 +3,10 @@ package ru.greenstudio.urioschedulefx.Utils.IO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
-import ru.greenstudio.urioschedulefx.model.*;
+import ru.greenstudio.urioschedulefx.model.Day;
+import ru.greenstudio.urioschedulefx.model.Group;
+import ru.greenstudio.urioschedulefx.model.Schedule;
+import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -17,7 +20,7 @@ public class Files {
     private static final String[] files = {"cabs", "lessons", "groups", "teachers", "schedule"};
     private static final String format = ".xml";
 
-    public static void checkFiles() {
+    private static void checkFiles() {
         File filePath = new File(path);
         if (!filePath.exists()) {
             filePath.mkdir();
@@ -36,7 +39,6 @@ public class Files {
 
     public static void saveDataToFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
                                       ObservableList<Group> groupsData, ObservableList<Teacher> teachersData, Schedule schedule) {
-        checkFiles();
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Marshaller m = context.createMarshaller();
@@ -105,6 +107,7 @@ public class Files {
 
     public static void loadDataFromFile(ObservableList<String> lessonsListData, ObservableList<String> cabsListData,
                                         ObservableList<Group> groupsData, ObservableList<Teacher> teachersData) {
+        checkFiles();
         try {
             JAXBContext context = JAXBContext.newInstance(LessonWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
@@ -115,37 +118,47 @@ public class Files {
 
             lessonsListData.clear();
             lessonsListData.addAll(lessonsWrapper.getLessons());
+        } catch (Exception e) {
+            System.out.println(e + "\n LESSONS");
+        }
+        try {
+            JAXBContext context = JAXBContext.newInstance(CabWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
 
-            context = JAXBContext.newInstance(CabWrapper.class);
-            um = context.createUnmarshaller();
-
-            file = new File("data/" + files[0] + ".xml");
+            File file = new File("data/" + files[0] + ".xml");
 
             CabWrapper cabWrapper = (CabWrapper) um.unmarshal(file);
 
             cabsListData.clear();
             cabsListData.addAll(cabWrapper.getCabs());
+        } catch (Exception e) {
+            System.out.println(e + "\n CABS");
+        }
+        try {
+            JAXBContext context = JAXBContext.newInstance(GroupWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
 
-            context = JAXBContext.newInstance(GroupWrapper.class);
-            um = context.createUnmarshaller();
-
-            file = new File("data/" + files[2] + ".xml");
+            File file = new File("data/" + files[2] + ".xml");
 
             GroupWrapper groupWrapper = (GroupWrapper) um.unmarshal(file);
 
             groupsData.clear();
             groupsData.addAll(groupWrapper.getGroups());
+        } catch (Exception e) {
+            System.out.println(e + "\n GROUPS");
+        }
+        try {
+            JAXBContext context = JAXBContext.newInstance(TeacherWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
 
-            context = JAXBContext.newInstance(TeacherWrapper.class);
-            um = context.createUnmarshaller();
-
-            file = new File("data/" + files[3] + ".xml");
+            File file = new File("data/" + files[3] + ".xml");
 
             TeacherWrapper teacherWrapper = (TeacherWrapper) um.unmarshal(file);
 
             teachersData.clear();
             teachersData.addAll(teacherWrapper.getTeachers());
         } catch (Exception e) { // catches ANY exception
+            System.out.println(e + "\n TEACHERS");
 //            Alert alert = new Alert(Alert.AlertType.ERROR);
 //            alert.setTitle("Error");
 //            alert.setHeaderText("Could not load data");
@@ -156,9 +169,8 @@ public class Files {
     }
 
     public static void loadSchedule(Schedule schedule) {
-        JAXBContext context = null;
         try {
-            context = JAXBContext.newInstance(ScheduleWrapper.class);
+            JAXBContext context = JAXBContext.newInstance(ScheduleWrapper.class);
             Unmarshaller um = context.createUnmarshaller();
 
             File file = new File("data/" + files[4] + ".xml");
@@ -166,37 +178,13 @@ public class Files {
             ScheduleWrapper scheduleWrapper = (ScheduleWrapper) um.unmarshal(file);
 
             schedule.setName(scheduleWrapper.getSchedule().getName());
-            schedule.setMaxGroupLessons(scheduleWrapper.getSchedule().getMaxGroupLessons());
-            schedule.setActualGroupLessons(scheduleWrapper.getSchedule().getActualGroupLessons());
-            schedule.setMaxTeacherLessons(scheduleWrapper.getSchedule().getMaxTeacherLessons());
-            schedule.setActualTeacherLessons(scheduleWrapper.getSchedule().getActualTeacherLessons());
-
-            if (scheduleWrapper.getSchedule().getActualGroups() != null)
-                schedule.setActualGroups(scheduleWrapper.getSchedule().getActualGroups());
-            else {
-                schedule.setActualGroups(FXCollections.observableArrayList());
-                for (int i = 0; i < schedule.getMaxGroups().size(); i++) {
-                    schedule.getActualGroups().add(i,
-                            new Group(schedule.getMaxGroups().get(i).getName(), schedule.getMaxGroups().get(i).getLessonsNames()
-                                    , schedule.getMaxGroups().get(i).getNullHours()));
-                }
-            }
-
+            schedule.getActualTeachers().clear();
             if (scheduleWrapper.getSchedule().getActualTeachers() != null)
-                schedule.setActualTeachers(scheduleWrapper.getSchedule().getActualTeachers());
-            else {
-                schedule.setActualTeachers(FXCollections.observableArrayList());
-                for (int i = 0; i < schedule.getMaxTeachers().size(); i++) {
-                    schedule.getActualTeachers().add(
-                            new Teacher(schedule.getMaxTeachers().get(i).getName(), FXCollections.observableArrayList()));
-                    if (schedule.getMaxTeachers().get(i).getLessons() != null) {
-                        for (int j = 0; j < schedule.getMaxTeachers().get(i).getLessons().size(); j++) {
-                            schedule.getActualTeachers().get(i).getLessons().add(
-                                    new Lesson(schedule.getMaxTeachers().get(i).getLessons().get(j).getName(), 0));
-                        }
-                    }
-                }
-            }
+                schedule.getActualTeachers().addAll(scheduleWrapper.getSchedule().getActualTeachers());
+            schedule.getActualGroups().clear();
+            if (scheduleWrapper.getSchedule().getActualGroups() != null)
+                schedule.getActualGroups().addAll(scheduleWrapper.getSchedule().getActualGroups());
+
 
             schedule.setDays(FXCollections.observableArrayList());
 
@@ -207,7 +195,7 @@ public class Files {
                     schedule.getDays().get(i).setLectures(scheduleWrapper.getSchedule().getDays().get(i).getLectures());
             }
         } catch (JAXBException e) {
-            e.printStackTrace();
+            System.out.println(e + "\n SCHEDULE");
         }
     }
 

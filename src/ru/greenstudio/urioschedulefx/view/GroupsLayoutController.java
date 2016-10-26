@@ -10,11 +10,14 @@ import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.model.Group;
+import ru.greenstudio.urioschedulefx.model.Lecture;
 import ru.greenstudio.urioschedulefx.model.Lesson;
+import ru.greenstudio.urioschedulefx.model.Teacher;
+
+import java.util.List;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInGroupData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
-import static ru.greenstudio.urioschedulefx.Utils.Funcs.checkLessonsData;
 import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 
 public class GroupsLayoutController {
@@ -112,20 +115,22 @@ public class GroupsLayoutController {
         if (selectedLesson != null) {
             if (isTextFieldOk(textLesson)) {
                 Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
+                String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
+
                 int lessonHours = Integer.parseInt(textLesson.getText());
+                Lesson newLesson = new Lesson(selectedLesson.getName(), lessonHours);
                 selectedLesson.setHours(lessonHours);
-                System.out.println(selectedLesson);
+
+                lessonHoursMinus(newLesson, oldLesson, groupName);
+
                 mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                         getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+                mainApp.getSchedule().getActualGroups().get(groupsListView.getSelectionModel().getSelectedIndex()).
+                        getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+
                 lessonTableView.getSelectionModel().clearSelection();
                 textLesson.setText("");
                 textLesson.requestFocus();
-
-                Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
-                ObservableList<Lesson> lessonsMaxData = mainApp.getMaxLessonsData();
-                ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
-                checkLessonsData(selectedLesson, newLesson, lessonsMaxData, lessonsData);
-
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
@@ -138,12 +143,70 @@ public class GroupsLayoutController {
 
         if (selectedLesson != null) {
             Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
-            int lessonHours = 0;
-            selectedLesson.setHours(lessonHours);
+            String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
+
+            selectedLesson.setHours(0);
+            Lesson newLesson = new Lesson(selectedLesson.getName(), 0);
+
+            lessonHoursMinus(newLesson, oldLesson, groupName);
+
             mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                     getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+            mainApp.getSchedule().getActualGroups().get(groupsListView.getSelectionModel().getSelectedIndex()).
+                    getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
 
-            lessonHours = oldLesson.getHours();
+            lessonTableView.getSelectionModel().clearSelection();
+            textLesson.setText("");
+            textLesson.requestFocus();
+        } else {
+            showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
+        }
+    }
+
+    private void lessonHoursMinus(Lesson newLesson, Lesson oldLesson, String groupName) {
+        int lessonHours = oldLesson.getHours() - newLesson.getHours();
+
+        if (!isActualEmpty(oldLesson.getName(), groupName)) {
+            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                    Lecture lecture = mainApp.getSchedule().getDays().get(i).getLectures().get(j);
+                    if (lessonHours <= 0) {
+                        return;
+                    }
+
+                    if (lecture.getGroup().equals(groupName) && lecture.getLesson().equals(oldLesson.getName())) {
+                        List<Teacher> actualTeachers = mainApp.getSchedule().getActualTeachers();
+                        for (int k = 0; k < actualTeachers.size(); k++) {
+                            boolean boo2 = false;
+                            if (lecture.getTeacher().equals(actualTeachers.get(k).getName())) {
+                                for (int l = 0; l < actualTeachers.get(k).getLessons().size(); l++) {
+                                    if (actualTeachers.get(k).getLessons().get(l).getName().equals(
+                                            lecture.getLesson())) {
+                                        actualTeachers.get(k).getLessons().get(l).setHours(
+                                                actualTeachers.get(k).getLessons().get(l).getHours() - 2);
+                                        mainApp.getTeachersData().get(k).getLessons().get(l).setHours(
+                                                mainApp.getTeachersData().get(k).getLessons().get(l).getHours() - 2);
+                                        lessonHours -= 2;
+                                        boo2 = true;
+                                        break;
+                                    }
+                                }
+                                if (boo2)
+                                    break;
+                            }
+                        }
+
+                        lecture.setLesson("");
+                        lecture.setTeacher("");
+                    }
+                }
+                if (lessonHours <= 0) {
+                    return;
+                }
+            }
+        }
+
+        if (isActualEmpty(oldLesson.getName(), groupName)) {
             for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
                 for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
                     if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(
@@ -158,25 +221,28 @@ public class GroupsLayoutController {
                                 mainApp.getTeachersData().get(i).getLessons().get(j).setHours(0);
                             }
                         }
-
                         break;
                     }
                 }
                 if (lessonHours <= 0)
                     break;
             }
-
-            Lesson newLesson = new Lesson(oldLesson.getName(), selectedLesson.getHours() - oldLesson.getHours());
-            ObservableList<Lesson> lessonsMaxData = mainApp.getMaxLessonsData();
-            ObservableList<Lesson> lessonsData = mainApp.getLessonsData();
-            checkLessonsData(selectedLesson, newLesson, lessonsMaxData, lessonsData);
-
-            lessonTableView.getSelectionModel().clearSelection();
-            textLesson.setText("");
-            textLesson.requestFocus();
-        } else {
-            showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }
+    }
+
+    private boolean isActualEmpty(String lessonName, String groupName) {
+        for (int i = 0; i < mainApp.getSchedule().getActualGroups().size(); i++) {
+            if (mainApp.getSchedule().getActualGroups().get(i).getName().equals(groupName)) {
+                for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
+                    if (mainApp.getLessonsListData().get(j).equals(lessonName)) {
+                        if (mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) > 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     @FXML
@@ -204,7 +270,13 @@ public class GroupsLayoutController {
             for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
                 list.add(0);
             }
+
+            ObservableList<Integer> list1 = FXCollections.observableArrayList();
+            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
+                list1.add(0);
+            }
             mainApp.getGroupsData().add(new Group(groupName, mainApp.getLessonsListData(), list));
+            mainApp.getSchedule().getActualGroups().add(new Group(groupName, mainApp.getLessonsListData(), list1));
             groupsListView.getSelectionModel().clearSelection();
             textGroup.setText("");
             textGroup.requestFocus();
@@ -217,12 +289,22 @@ public class GroupsLayoutController {
         if (selectedGroup != null) {
             if (isTextFieldOk(textGroup)) {
                 if (!alreadyInGroupData(mainApp.getGroupsData(), textGroup.getText(), mainApp.getPrimaryStage(), "группу")) {
+                    String oldGroupName = groupsListView.getSelectionModel().getSelectedItem().getName();
                     String groupName = textGroup.getText();
                     selectedGroup.setName(groupName);
-                    mainApp.getGroupsData().set(groupsListView.getSelectionModel().getSelectedIndex(), selectedGroup);
+                    mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).setName(groupName);
+                    mainApp.getSchedule().getActualGroups().get(
+                            groupsListView.getSelectionModel().getSelectedIndex()).setName(groupName);
+                    groupsListView.refresh();
                     groupsListView.getSelectionModel().clearSelection();
                     textGroup.setText("");
                     textGroup.requestFocus();
+                    for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                        for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                            if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getGroup().equals(oldGroupName))
+                                mainApp.getSchedule().getDays().get(i).getLectures().get(j).setGroup(groupName);
+                        }
+                    }
                 }
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "группу");
         } else {
@@ -234,10 +316,50 @@ public class GroupsLayoutController {
     private void handleDeleteGroup() {
         int selectedIndex = groupsListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
+            String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
+            Group selectedGroup = groupsListView.getSelectionModel().getSelectedItem();
+            for (int i = 0; i < selectedGroup.getLessonsHours().size(); i++) {
+                while (selectedGroup.getLessonsHours().get(i) > 0) {
+                    for (int j = 0; j < mainApp.getTeachersData().size(); j++) {
+                        for (int k = 0; k < mainApp.getTeachersData().get(j).getLessons().size(); k++) {
+                            if (mainApp.getTeachersData().get(j).getLessons().get(k).getName().
+                                    equals(mainApp.getLessonsListData().get(i))) {
+                                while (mainApp.getTeachersData().get(j).getLessons().get(k).getHours() > 0 &&
+                                        selectedGroup.getLessonsHours().get(i) > 0) {
+                                    selectedGroup.getLessonsHours().set(i, selectedGroup.getLessonsHours().get(i) - 1);
+                                    mainApp.getTeachersData().get(j).getLessons().get(k).setHours(
+                                            mainApp.getTeachersData().get(j).getLessons().get(k).getHours() - 1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                    if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getGroup().equals(groupName)) {
+                        for (int k = 0; k < mainApp.getSchedule().getActualTeachers().size(); k++) {
+                            for (int l = 0; l < mainApp.getSchedule().getActualTeachers().get(k).getLessons().size(); l++) {
+                                if (mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).getName().equals(
+                                        mainApp.getSchedule().getDays().get(i).getLectures().get(j).getLesson())) {
+                                    mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).setHours(
+                                            mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).getHours() - 2);
+                                }
+                            }
+                        }
+                        mainApp.getSchedule().getDays().get(i).getLectures().remove(j);
+                        --j;
+                    }
+                }
+            }
             groupsListView.getItems().remove(selectedIndex);
+            mainApp.getSchedule().getActualGroups().remove(selectedIndex);
             groupsListView.getSelectionModel().clearSelection();
             textGroup.setText("");
             textGroup.requestFocus();
+
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "удалить", "группу");
         }

@@ -1,17 +1,12 @@
 package ru.greenstudio.urioschedulefx.model;
 
-import java.util.ArrayList;
+import javafx.collections.FXCollections;
+
 import java.util.List;
 
 public class Schedule {
     private String name;
     private List<Day> days;
-
-    private List<Lesson> maxGroupLessons;
-    private List<Lesson> actualGroupLessons;
-
-    private List<Lesson> maxTeacherLessons;
-    private List<Lesson> actualTeacherLessons;
 
     private List<Group> maxGroups;
     private List<Group> actualGroups;
@@ -22,15 +17,10 @@ public class Schedule {
     public Schedule(String name, List<Day> days) {
         this.name = name;
         this.days = days;
-        this.maxGroupLessons = maxGroupLessons;
-        this.maxTeacherLessons = maxTeacherLessons;
-
-        actualGroupLessons = new ArrayList<>();
-        actualTeacherLessons = new ArrayList<>();
     }
 
     public Schedule() {
-        this(null, null);
+        this("", FXCollections.observableArrayList());
     }
 
     public String getName() {
@@ -49,37 +39,6 @@ public class Schedule {
         this.days = days;
     }
 
-    public List<Lesson> getMaxGroupLessons() {
-        return maxGroupLessons;
-    }
-
-    public void setMaxGroupLessons(List<Lesson> maxGroupLessons) {
-        this.maxGroupLessons = maxGroupLessons;
-    }
-
-    public List<Lesson> getActualGroupLessons() {
-        return actualGroupLessons;
-    }
-
-    public void setActualGroupLessons(List<Lesson> actualGroupLessons) {
-        this.actualGroupLessons = actualGroupLessons;
-    }
-
-    public List<Lesson> getMaxTeacherLessons() {
-        return maxTeacherLessons;
-    }
-
-    public void setMaxTeacherLessons(List<Lesson> maxTeacherLessons) {
-        this.maxTeacherLessons = maxTeacherLessons;
-    }
-
-    public List<Lesson> getActualTeacherLessons() {
-        return actualTeacherLessons;
-    }
-
-    public void setActualTeacherLessons(List<Lesson> actualTeacherLessons) {
-        this.actualTeacherLessons = actualTeacherLessons;
-    }
 
     public List<Group> getMaxGroups() {
         return maxGroups;
@@ -118,10 +77,6 @@ public class Schedule {
         return "Schedule{" +
                 "name='" + name + '\'' + "\n" +
                 ", days=" + days +
-                ",\n maxGroupLessons=" + maxGroupLessons +
-                ",\n actualGroupLessons=" + actualGroupLessons +
-                ",\n maxTeacherLessons=" + maxTeacherLessons +
-                ",\n actualTeacherLessons=" + actualTeacherLessons +
                 ",\n maxGroups= " + maxGroups +
                 ",\n actualGroups= " + actualGroups +
                 ",\n maxTeachers= " + maxTeachers +

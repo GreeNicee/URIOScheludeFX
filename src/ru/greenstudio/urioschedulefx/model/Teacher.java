@@ -2,6 +2,7 @@ package ru.greenstudio.urioschedulefx.model;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Teacher {
 //    private final List<Integer> lessonsHours;
 
     public Teacher() {
-        this(null, null);
+        this("", FXCollections.observableArrayList());
     }
 
     public Teacher(String name, List<Lesson> lessons) {

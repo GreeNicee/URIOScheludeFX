@@ -14,7 +14,7 @@ public class Group {
     private final List<String> lessonsNames;
 
     public Group() {
-        this(null, null, null);
+        this("", null, FXCollections.observableArrayList());
     }
 
     public List<String> getLessonsNames() {
