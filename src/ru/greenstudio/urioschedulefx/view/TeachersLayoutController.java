@@ -10,6 +10,7 @@ import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.Utils.IsInputOk;
+import ru.greenstudio.urioschedulefx.model.Lecture;
 import ru.greenstudio.urioschedulefx.model.Lesson;
 import ru.greenstudio.urioschedulefx.model.Teacher;
 
@@ -318,6 +319,7 @@ public class TeachersLayoutController {
     @FXML
     private void handleEditTeacher() {
         Teacher selectedTeacher = teachersListView.getSelectionModel().getSelectedItem();
+        String oldTeacherName = teachersListView.getSelectionModel().getSelectedItem().getName();
         if (selectedTeacher != null) {
             if (isTextFieldOk(textTeacher)) {
                 if (!alreadyInTeacherData(mainApp.getTeachersData(), textTeacher.getText(), mainApp.getPrimaryStage(), "преподаватель")) {
@@ -325,6 +327,12 @@ public class TeachersLayoutController {
                     mainApp.getTeachersData().set(teachersListView.getSelectionModel().getSelectedIndex(), selectedTeacher);
                     mainApp.getSchedule().getActualTeachers().get(
                             teachersListView.getSelectionModel().getSelectedIndex()).setName(selectedTeacher.getName());
+                    for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                        for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                            if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getTeacher().equals(oldTeacherName))
+                                mainApp.getSchedule().getDays().get(i).getLectures().get(j).setTeacher(selectedTeacher.getName());
+                        }
+                    }
                     teachersListView.getSelectionModel().clearSelection();
                     textTeacher.setText("");
                     textTeacher.requestFocus();
@@ -335,10 +343,39 @@ public class TeachersLayoutController {
         }
     }
 
+    //TODO все изменения при уменьшении значений (ну ты понял да)
     @FXML
     private void handleDeleteTeacher() {
         int selectedIndex = teachersListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
+            String teacherName = teachersListView.getSelectionModel().getSelectedItem().getName();
+            Teacher selectedTeacher = teachersListView.getSelectionModel().getSelectedItem();
+
+            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
+                    Lecture lecture = mainApp.getSchedule().getDays().get(i).getLectures().get(j);
+                    boolean boo = false;
+                    if (lecture.getTeacher().equals(teacherName)) {
+                        lecture.setTeacher("");
+                        for (int k = 0; k < mainApp.getSchedule().getActualGroups().size(); k++) {
+                            if (lecture.getGroup().equals(mainApp.getSchedule().getActualGroups().get(k).getName())) {
+                                for (int l = 0; l < mainApp.getLessonsListData().size(); l++) {
+                                    if (mainApp.getLessonsListData().get(l).equals(lecture.getLesson())) {
+                                        mainApp.getSchedule().getActualGroups().get(k).getLessonsHours().set(l,
+                                                mainApp.getSchedule().getActualGroups().get(k).getLessonsHours().get(k) - 2);
+                                        boo = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (boo)
+                                break;
+                        }
+                        lecture.setLesson("");
+                    }
+                }
+            }
+
             teachersListView.getItems().remove(selectedIndex);
             mainApp.getSchedule().getActualTeachers().remove(selectedIndex);
             teachersListView.getSelectionModel().clearSelection();
@@ -357,4 +394,5 @@ public class TeachersLayoutController {
             textTeacher.requestFocus();
         }
     }
+
 }

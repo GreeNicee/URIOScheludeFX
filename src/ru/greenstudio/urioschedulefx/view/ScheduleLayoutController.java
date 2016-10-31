@@ -235,10 +235,11 @@ public class ScheduleLayoutController {
         });
     }
 
-    @FXML
+    @FXML//TODO при изменении урока у пары выводится не совсем правильно (где то в часах групп)
     private void handleTableLecturesClick() {
         if (tableLectures.getSelectionModel().getSelectedItem() == null)
             return;
+
         Schedule schedule = mainApp.getSchedule();
         List<Lecture> lectures = mainApp.getSchedule().getDays().get(
                 listDays.getSelectionModel().getSelectedIndex()).getLectures();
@@ -367,12 +368,14 @@ public class ScheduleLayoutController {
 
                 if (teacherName.equals(schedule.getMaxTeachers().get(j).getName())) {
                     for (int l = 0; l < schedule.getMaxTeachers().get(j).getLessons().size(); l++) {
-                        if (schedule.getActualTeachers().get(j).getLessons().get(l).getHours() >=
-                                schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() ||
-                                schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() == 0) {
-                            boo = true;
-                            k = i;
-                            break;
+                        if (schedule.getActualTeachers().get(j).getLessons().get(l).getName().equals(lessName)) {
+                            if (schedule.getActualTeachers().get(j).getLessons().get(l).getHours() >=
+                                    schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() ||
+                                    schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() == 0) {
+                                boo = true;
+                                k = i;
+                                break;
+                            }
                         }
                     }
                 }
@@ -380,7 +383,6 @@ public class ScheduleLayoutController {
             if (boo)
                 dataNiceLessons.remove(k);
         }
-
 
         comboLessons.setItems(dataNiceLessons);
     }

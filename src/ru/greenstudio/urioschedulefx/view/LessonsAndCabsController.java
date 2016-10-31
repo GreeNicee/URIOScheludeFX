@@ -5,6 +5,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import ru.greenstudio.urioschedulefx.MainApp;
+import ru.greenstudio.urioschedulefx.model.Day;
+import ru.greenstudio.urioschedulefx.model.Lecture;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInStringData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -60,8 +62,8 @@ public class LessonsAndCabsController {
 
     @FXML
     private void handleEditCab() {
-        String selectedLesson = cabListView.getSelectionModel().getSelectedItem();
-        if (selectedLesson != null) {
+        String selectedCab = cabListView.getSelectionModel().getSelectedItem();
+        if (selectedCab != null) {
             if (isTextFieldOk(textCab)) {
                 if (!alreadyInStringData(mainApp.getCabsListData(), textCab.getText(), mainApp.getPrimaryStage(), "аудиторию")) {
                     String cab = textCab.getText();
@@ -69,6 +71,13 @@ public class LessonsAndCabsController {
                     cabListView.getSelectionModel().clearSelection();
                     textCab.setText("");
                     textCab.requestFocus();
+
+                    for (Day day : mainApp.getSchedule().getDays()) {
+                        for (Lecture lecture : day.getLectures()) {
+                            if (lecture.getCab().equals(selectedCab))
+                                lecture.setCab(cab);
+                        }
+                    }
                 }
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "аудиторию");
         } else {
@@ -79,11 +88,19 @@ public class LessonsAndCabsController {
     @FXML
     private void handleDeleteCab() {
         int selectedIndex = cabListView.getSelectionModel().getSelectedIndex();
+        String selectedCab = cabListView.getSelectionModel().getSelectedItem();
         if (selectedIndex >= 0) {
             cabListView.getItems().remove(selectedIndex);
             cabListView.getSelectionModel().clearSelection();
             textCab.setText("");
             textCab.requestFocus();
+
+            for (Day day : mainApp.getSchedule().getDays()) {
+                for (Lecture lecture : day.getLectures()) {
+                    if (lecture.getCab().equals(selectedCab))
+                        lecture.setCab("");
+                }
+            }
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "удалить", "аудиторию");
         }

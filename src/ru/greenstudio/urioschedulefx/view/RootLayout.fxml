@@ -8,18 +8,7 @@
            <menus>
                <Menu mnemonicParsing="false" text="Расписание">
                    <items>
-                       <Menu mnemonicParsing="false" text="Word">
-                           <items>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordPrint"
-                                         text="Для аудиторного фонда"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordTeachers"
-                                         text="Для преподавателей"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordGroups" text="Для студентов"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveWordAll"
-                                         text="Для всех (3 файла)"/>
-                           </items>
-                       </Menu>
-                       <Menu mnemonicParsing="false" text="Excel">
+                       <Menu mnemonicParsing="false" text="Сохранить в Excel">
                            <items>
                                <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelPrint"
                                          text="Для аудиторного фонда"/>

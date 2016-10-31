@@ -125,8 +125,7 @@ public class GroupsLayoutController {
 
                 mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                         getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
-                mainApp.getSchedule().getActualGroups().get(groupsListView.getSelectionModel().getSelectedIndex()).
-                        getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+
 
                 lessonTableView.getSelectionModel().clearSelection();
                 textLesson.setText("");
@@ -373,4 +372,5 @@ public class GroupsLayoutController {
             textGroup.requestFocus();
         }
     }
+
 }
