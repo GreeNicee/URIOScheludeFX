@@ -2,7 +2,9 @@ package ru.greenstudio.urioschedulefx.Utils;
 
 import javafx.collections.FXCollections;
 import ru.greenstudio.urioschedulefx.MainApp;
-import ru.greenstudio.urioschedulefx.model.*;
+import ru.greenstudio.urioschedulefx.model.Group;
+import ru.greenstudio.urioschedulefx.model.Lesson;
+import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import java.util.List;
 
@@ -47,32 +49,31 @@ public class Funcs {
 
     public static List<Lesson> getTeachersLessonsData(MainApp mainApp, List<Teacher> teachersData) {
         List<Lesson> teachersLessonsData = FXCollections.observableArrayList();
-        for (int i = 0; i < teachersData.size(); i++) {
-            for (int j = 0; j < teachersData.get(i).getLessons().size(); j++) {
+        for (Teacher aTeachersData : teachersData) {
+            for (int j = 0; j < aTeachersData.getLessons().size(); j++) {
                 if (teachersLessonsData.size() == 0) {
-                    teachersLessonsData.add(new Lesson(teachersData.get(i).getLessons().get(j).getName(),
-                            teachersData.get(i).getLessons().get(j).getHours()));
+                    teachersLessonsData.add(new Lesson(aTeachersData.getLessons().get(j).getName(),
+                            aTeachersData.getLessons().get(j).getHours()));
                 } else {
                     boolean boo = false;
                     for (Lesson aTeachersLessonsData : teachersLessonsData) {
-                        if (teachersData.get(i).getLessons().get(j).getName().equals(
+                        if (aTeachersData.getLessons().get(j).getName().equals(
                                 aTeachersLessonsData.getName())) {
                             aTeachersLessonsData.setHours(aTeachersLessonsData.getHours() +
-                                    teachersData.get(i).getLessons().get(j).getHours());
+                                    aTeachersData.getLessons().get(j).getHours());
                             boo = true;
                             break;
                         }
                     }
                     if (!boo) {
-                        teachersLessonsData.add(new Lesson(teachersData.get(i).getLessons().get(j).getName(),
-                                teachersData.get(i).getLessons().get(j).getHours()));
+                        teachersLessonsData.add(new Lesson(aTeachersData.getLessons().get(j).getName(),
+                                aTeachersData.getLessons().get(j).getHours()));
                     }
                 }
             }
         }
         return teachersLessonsData;
     }
-
 
     public static List<Lesson> getGroupsLessonsData(MainApp mainApp) {
         List<Lesson> groupsLessonsData = FXCollections.observableArrayList();
@@ -106,25 +107,25 @@ public class Funcs {
 
     public static List<Lesson> getGroupsLessonsData(MainApp mainApp, List<Group> groupsData) {
         List<Lesson> groupsLessonsData = FXCollections.observableArrayList();
-        for (int i = 0; i < groupsData.size(); i++) {
-            for (int j = 0; j < groupsData.get(i).getLessonsHours().size(); j++) {
+        for (Group aGroupsData : groupsData) {
+            for (int j = 0; j < aGroupsData.getLessonsHours().size(); j++) {
                 if (groupsLessonsData.size() == 0) {
                     groupsLessonsData.add(new Lesson(mainApp.getLessonsListData().get(j),
-                            groupsData.get(i).getLessonsHours().get(j)));
+                            aGroupsData.getLessonsHours().get(j)));
                 } else {
                     boolean boo = false;
                     for (Lesson aGroupsLessonsData : groupsLessonsData) {
                         if (mainApp.getLessonsListData().get(j).equals(
                                 aGroupsLessonsData.getName())) {
                             aGroupsLessonsData.setHours(aGroupsLessonsData.getHours() +
-                                    groupsData.get(i).getLessonsHours().get(j));
+                                    aGroupsData.getLessonsHours().get(j));
                             boo = true;
                             break;
                         }
                     }
                     if (!boo) {
                         groupsLessonsData.add(new Lesson(mainApp.getLessonsListData().get(j),
-                                groupsData.get(i).getLessonsHours().get(j)));
+                                aGroupsData.getLessonsHours().get(j)));
                     }
                 }
             }
@@ -138,44 +139,25 @@ public class Funcs {
         if (teachersLessonsData.size() == 0)
             teachersLessonsData.add(new Lesson("", -10));
 
-        for (int i = 0; i < groupsLessonsData.size(); i++) {
+        for (Lesson aGroupsLessonsData : groupsLessonsData) {
             for (int j = 0; j < teachersLessonsData.size(); j++) {
-                if (groupsLessonsData.get(i).getName().equals(teachersLessonsData.get(j).getName())) {
-                    if (groupsLessonsData.get(i).getHours() > teachersLessonsData.get(j).getHours()) {
+                if (aGroupsLessonsData.getName().equals(teachersLessonsData.get(j).getName())) {
+                    if (aGroupsLessonsData.getHours() > teachersLessonsData.get(j).getHours()) {
                         boolean boo = false;
-                        for (int k = 0; k < listData.size(); k++) {
-                            if (listData.get(k).equals(groupsLessonsData.get(i).getName())) {
+                        for (String aListData : listData) {
+                            if (aListData.equals(aGroupsLessonsData.getName())) {
                                 boo = true;
                                 break;
                             }
                         }
                         if (!boo) {
-                            listData.add(groupsLessonsData.get(i).getName());
+                            listData.add(aGroupsLessonsData.getName());
                             break;
                         }
                     } else break;
                 } else if (j == teachersLessonsData.size() - 1) {
-                    listData.add(groupsLessonsData.get(i).getName());
+                    listData.add(aGroupsLessonsData.getName());
                 }
-            }
-        }
-    }
-
-
-    //TODO функцию проверки часов у макс групп и макс преподов с актуальными гр,пр
-    private void checkScheduleLessons(Schedule schedule) {
-        List<Day> days = schedule.getDays();
-
-//        for (int i = 0; i < ; i++) {
-
-//        }
-
-    }
-
-    private void checkDaysLectures(List<Day> days/*TODO ,lessname */) {
-        for (int i = 0; i < days.size(); i++) {
-            for (int j = 0; j < days.get(i).getLectures().size(); j++) {
-
             }
         }
     }

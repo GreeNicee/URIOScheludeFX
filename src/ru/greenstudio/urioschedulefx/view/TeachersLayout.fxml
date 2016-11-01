@@ -51,11 +51,6 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="edit" mnemonicParsing="false" onMouseClicked="#handleEditLesson" text="Изменить">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Button>
                   <Button fx:id="del" mnemonicParsing="false" onMouseClicked="#handleDeleteLesson" text="Удалить">
                      <cursor>
                         <Cursor fx:constant="HAND" />

@@ -18,6 +18,8 @@ import java.util.List;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInGroupData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
+import static ru.greenstudio.urioschedulefx.Utils.Funcs.getGroupsLessonsData;
+import static ru.greenstudio.urioschedulefx.Utils.Funcs.getTeachersLessonsData;
 import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 
 public class GroupsLayoutController {
@@ -120,8 +122,8 @@ public class GroupsLayoutController {
                 int lessonHours = Integer.parseInt(textLesson.getText());
                 Lesson newLesson = new Lesson(selectedLesson.getName(), lessonHours);
                 selectedLesson.setHours(lessonHours);
-
-                lessonHoursMinus(newLesson, oldLesson, groupName);
+                if (oldLesson.getHours() - newLesson.getHours() > 0)
+                    lessonHoursMinus(newLesson, oldLesson, groupName);
 
                 mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                         getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
@@ -205,27 +207,43 @@ public class GroupsLayoutController {
             }
         }
 
-        if (isActualEmpty(oldLesson.getName(), groupName)) {
-            for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
-                for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
-                    if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(
-                            lessonTableView.getSelectionModel().getSelectedItem().getName())) {
-                        if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() > 0) {
-                            if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() >= lessonHours) {
-                                mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
-                                        mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - lessonHours);
-                                lessonHours = 0;
-                            } else {
-                                lessonHours -= mainApp.getTeachersData().get(i).getLessons().get(j).getHours();
-                                mainApp.getTeachersData().get(i).getLessons().get(j).setHours(0);
-                            }
-                        }
-                        break;
+        int allLessHours = 0;
+
+        exit:
+        for (Lesson lessonTeacher : getTeachersLessonsData(mainApp)) {
+            if (lessonTeacher.getName().equals(newLesson.getName())) {
+                for (Lesson lessonGroup : getGroupsLessonsData(mainApp)) {
+                    if (lessonGroup.getName().equals(lessonTeacher.getName())) {
+                        allLessHours = lessonTeacher.getHours() - (lessonGroup.getHours() -
+                                oldLesson.getHours() - newLesson.getHours());
+                        break exit;
                     }
                 }
-                if (lessonHours <= 0)
-                    break;
             }
+        }
+
+        if (allLessHours <= 0)
+            return;
+
+        for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+            for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(
+                        lessonTableView.getSelectionModel().getSelectedItem().getName())) {
+                    if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() > 0) {
+                        if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() >= allLessHours) {
+                            mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
+                                    mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - allLessHours);
+                            allLessHours = 0;
+                        } else {
+                            allLessHours -= mainApp.getTeachersData().get(i).getLessons().get(j).getHours();
+                            mainApp.getTeachersData().get(i).getLessons().get(j).setHours(0);
+                        }
+                    }
+                    break;
+                }
+            }
+            if (allLessHours <= 0)
+                break;
         }
     }
 

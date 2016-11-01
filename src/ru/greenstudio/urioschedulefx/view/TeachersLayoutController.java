@@ -10,11 +10,7 @@ import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.Utils.IsInputOk;
-import ru.greenstudio.urioschedulefx.model.Lecture;
-import ru.greenstudio.urioschedulefx.model.Lesson;
-import ru.greenstudio.urioschedulefx.model.Teacher;
-
-import java.util.List;
+import ru.greenstudio.urioschedulefx.model.*;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInTeacherData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -41,7 +37,6 @@ public class TeachersLayoutController {
 
 
     private MainApp mainApp;
-    private List<Lesson> teachersLessonsData;
 
     public TeachersLayoutController() {
     }
@@ -87,6 +82,7 @@ public class TeachersLayoutController {
         comboBoxTeacher.setOnMouseClicked(event -> {
             comboBoxTeacher.getItems().clear();
             if (teachersListView.getSelectionModel().getSelectedItem() != null) {
+                //noinspection unchecked
                 setGroupsTeachersLessonsData(mainApp, comboBoxTeacher.getItems());
 
                 for (int i = 0; i < lessonTableView.getItems().size(); i++) {
@@ -145,28 +141,18 @@ public class TeachersLayoutController {
     }
 
     @FXML
-    private void handleEditLesson() {//TODO Возможно нужно обнулять часы)
-        if (!isTextFieldOk(new TextField(comboBoxTeacher.getSelectionModel().getSelectedItem().toString()))) {
-            showWarningOperation(mainApp.getPrimaryStage(), "изменить", "преподавателя");
-            return;
-        }
-        String lessonName = comboBoxTeacher.getSelectionModel().getSelectedItem().toString();
-        int index = teachersListView.getSelectionModel().getSelectedIndex();
-        int lessonIndex = lessonTableView.getSelectionModel().getSelectedIndex();
-
-        mainApp.getTeachersData().get(index).getLessons().get(lessonIndex).setName(lessonName);
-        mainApp.getSchedule().getActualTeachers().get(index).getLessons().get(lessonIndex).setName(lessonName);
-        lessonTableView.getItems().get(lessonIndex).setName(lessonName);
-        lessonTableView.getSelectionModel().clearSelection();
-        comboBoxTeacher.getSelectionModel().clearSelection();
-        comboBoxTeacher.requestFocus();
-    }
-
-    @FXML
     private void handleDeleteLesson() {
         int selectedIndex = lessonTableView.getSelectionModel().getSelectedIndex();
+        Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
         if (selectedIndex >= 0) {
             int teacherIndex = teachersListView.getSelectionModel().getSelectedIndex();
+            mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
+                    getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(0);
+
+            checkActualTeachers(selectedLesson.getName(),
+                    mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+
             mainApp.getTeachersData().get(teacherIndex).getLessons().remove(selectedIndex);
             mainApp.getSchedule().getActualTeachers().get(teacherIndex).getLessons().remove(selectedIndex);
             lessonTableView.getItems().remove(selectedIndex);
@@ -192,6 +178,10 @@ public class TeachersLayoutController {
             lessonTableView.getSelectionModel().clearSelection();
             textLessonHours.setText("");
             textLessonHours.requestFocus();
+
+            checkActualTeachers(selectedLesson.getName(),
+                    mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         }
@@ -211,6 +201,10 @@ public class TeachersLayoutController {
             lessonTableView.getSelectionModel().clearSelection();
             textLessonHours.setText("");
             textLessonHours.requestFocus();
+
+            checkActualTeachers(selectedLesson.getName(),
+                    mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         }
@@ -224,12 +218,16 @@ public class TeachersLayoutController {
             if (isTextFieldOk(textLessonHours, IsInputOk.TextFieldType.NUMERIC)) {
                 int lessonHours = Integer.parseInt(textLessonHours.getText());
                 selectedLesson.setHours(lessonHours);
-                System.out.println(selectedLesson);
+
                 mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()).
                         getLessons().get(lessonTableView.getSelectionModel().getSelectedIndex()).setHours(selectedLesson.getHours());
                 lessonTableView.getSelectionModel().clearSelection();
                 textLessonHours.setText("");
                 textLessonHours.requestFocus();
+
+                checkActualTeachers(selectedLesson.getName(),
+                        mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                        mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
@@ -248,6 +246,10 @@ public class TeachersLayoutController {
             lessonTableView.getSelectionModel().clearSelection();
             textLessonHours.setText("");
             textLessonHours.requestFocus();
+
+            checkActualTeachers(selectedLesson.getName(),
+                    mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }
@@ -343,13 +345,11 @@ public class TeachersLayoutController {
         }
     }
 
-    //TODO все изменения при уменьшении значений (ну ты понял да)
     @FXML
     private void handleDeleteTeacher() {
         int selectedIndex = teachersListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             String teacherName = teachersListView.getSelectionModel().getSelectedItem().getName();
-            Teacher selectedTeacher = teachersListView.getSelectionModel().getSelectedItem();
 
             for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
                 for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
@@ -392,6 +392,50 @@ public class TeachersLayoutController {
         if (selectedTeacher != null) {
             textTeacher.setText(selectedTeacher.getName());
             textTeacher.requestFocus();
+        }
+    }
+
+    private void checkActualTeachers(String lessonName, Teacher maxTeacher, Teacher actualTeacher) {
+        Lesson lessMaxTeacher = new Lesson();
+        Lesson lessActualTeacher = new Lesson();
+        for (Lesson lesson : maxTeacher.getLessons()) {
+            if (lesson.getName().equals(lessonName)) {
+                lessMaxTeacher = lesson;
+                break;
+            }
+        }
+
+        for (Lesson lesson : actualTeacher.getLessons()) {
+            if (lesson.getName().equals(lessonName)) {
+                lessActualTeacher = lesson;
+                break;
+            }
+        }
+
+        exit:
+        for (Day day : mainApp.getSchedule().getDays()) {
+            for (Lecture lecture : day.getLectures()) {
+                if (lessMaxTeacher.getHours() >= lessActualTeacher.getHours())
+                    break exit;
+
+                if (lecture.getTeacher().equals(maxTeacher.getName()) && lecture.getLesson().equals(lessonName)) {
+                    lecture.setTeacher("");
+                    lecture.setLesson("");
+                    lessActualTeacher.setHours(lessActualTeacher.getHours() - 2);
+                    for (Group group : mainApp.getSchedule().getActualGroups()) {
+                        if (group.getName().equals(lecture.getGroup())) {
+                            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
+                                if (mainApp.getLessonsListData().get(i).equals(lessonName)) {
+                                    group.getLessonsHours().set(i,
+                                            group.getLessonsHours().get(i) - 2);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 

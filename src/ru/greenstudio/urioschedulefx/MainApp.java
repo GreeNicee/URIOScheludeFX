@@ -17,7 +17,6 @@ import ru.greenstudio.urioschedulefx.view.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import static ru.greenstudio.urioschedulefx.Utils.IO.Files.*;
 
@@ -38,21 +37,8 @@ public class MainApp extends Application {
 
     private ObservableList<Teacher> teachersData = FXCollections.observableArrayList();
 
-    private ArrayList<String> lectureNames = new ArrayList<>();
-
-    public ArrayList<String> getLectureNames() {
-        return lectureNames;
-    }
 
     public MainApp() {
-        lectureNames.add("Первая пара");
-        lectureNames.add("Вторая пара");
-        lectureNames.add("Третья пара");
-        lectureNames.add("Четвертая пара");
-        lectureNames.add("Пятая пара");
-        lectureNames.add("Шестая пара");
-        lectureNames.add("Седьмая пара");
-
         lessonsListData.setAll("LOL");
         cabsListData.setAll("LOL");
         groupsData.setAll(new Group("LOL",
@@ -97,7 +83,7 @@ public class MainApp extends Application {
         loadSchedule(schedule);
     }
 
-    private void setTestValues() {
+    /*private void setTestValues() {
         // В качестве образца добавляем некоторые данные
         lessonsListData.add("Вася");
         lessonsListData.add("Володя");
@@ -123,7 +109,7 @@ public class MainApp extends Application {
         }
 
         groupsData.add(new Group("Бизнес-информатика", lessonsListData, lessHoursData));
-    }
+    }*/
 
     public ObservableList<String> getLessonsListData() {
         return lessonsListData;

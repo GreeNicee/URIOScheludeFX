@@ -115,7 +115,7 @@ public class LessonsAndCabsController {
         }
     }
 
-    @FXML//TODO Обновление в группах
+    @FXML
     private void handleAddLesson() {
         if (!isTextFieldOk(textLesson)) {
             showWarningOperation(mainApp.getPrimaryStage(), "добавить", "предмет");
@@ -171,7 +171,7 @@ public class LessonsAndCabsController {
         }
     }
 
-    @FXML//TODO Обновление в группах
+    @FXML
     private void handleDeleteLesson() {
         int selectedIndex = lessonListView.getSelectionModel().getSelectedIndex();
         String selectedItem = lessonListView.getSelectionModel().getSelectedItem();

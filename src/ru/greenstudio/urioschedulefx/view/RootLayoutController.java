@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 
+@SuppressWarnings("ALL")
 public class RootLayoutController {
     private MainApp mainApp;
 
