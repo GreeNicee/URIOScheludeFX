@@ -14,6 +14,8 @@ import ru.greenstudio.urioschedulefx.model.*;
 
 import java.util.List;
 
+import static ru.greenstudio.urioschedulefx.Utils.Alerts.showNotReadyAlert;
+
 public class ScheduleLayoutController {
     @FXML
     private ListView<Day> listDays;
@@ -235,7 +237,7 @@ public class ScheduleLayoutController {
         });
     }
 
-    @FXML//TODO при изменении урока у пары выводится не совсем правильно (где то в часах групп)
+    @FXML
     private void handleTableLecturesClick() {
         if (tableLectures.getSelectionModel().getSelectedItem() == null)
             return;
@@ -274,7 +276,6 @@ public class ScheduleLayoutController {
                 break;
             }
         }
-
         ObservableList<Teacher> dataTeachers = FXCollections.observableArrayList();
         ObservableList<Teacher> teachersData = mainApp.getTeachersData();
 
@@ -303,7 +304,7 @@ public class ScheduleLayoutController {
 
         for (int i = 0; i < lectures.size(); i++) {
             for (int j = 0; j < dataNiceLessons.size(); j++) {
-                if (lectures.get(i).getNumName() != tableLectures.getSelectionModel().getSelectedIndex() &&
+                if (lectures.get(i).getNumName() != tableLectures.getSelectionModel().getSelectedItem().getNumName() &&
                         !lectures.get(i).getGroup().equals(
                                 tableLectures.getSelectionModel().getSelectedItem().getGroup())) {
                     if (lectures.get(i).getTeacher().equals(
@@ -315,6 +316,7 @@ public class ScheduleLayoutController {
                 }
             }
         }
+
 
         Group groupActual = new Group("", FXCollections.observableArrayList(), FXCollections.observableArrayList());
         Group groupMax = new Group("", FXCollections.observableArrayList(), FXCollections.observableArrayList());
@@ -362,6 +364,7 @@ public class ScheduleLayoutController {
         for (int i = 0; i < dataNiceLessons.size(); i++) {
             boolean boo = false;
             int k = 0;
+            exit:
             for (int j = 0; j < schedule.getMaxTeachers().size(); j++) {
                 String teacherName = dataNiceLessons.get(i).substring(dataNiceLessons.get(i).indexOf("|") + 2);
                 String lessName = dataNiceLessons.get(i).substring(0, dataNiceLessons.get(i).indexOf("|") - 1);
@@ -374,15 +377,18 @@ public class ScheduleLayoutController {
                                     schedule.getMaxTeachers().get(j).getLessons().get(l).getHours() == 0) {
                                 boo = true;
                                 k = i;
-                                break;
+                                break exit;
                             }
                         }
                     }
                 }
             }
-            if (boo)
+            if (boo) {
                 dataNiceLessons.remove(k);
+                --i;
+            }
         }
+        System.out.println(dataNiceLessons);
 
         comboLessons.setItems(dataNiceLessons);
     }
@@ -480,10 +486,68 @@ public class ScheduleLayoutController {
     @FXML
     private void handleRefreshData() {
         System.out.println(mainApp.getSchedule());
+
+//        mainApp.showStatistics();
     }
 
-    @FXML
+    @FXML//TODO не доделал
     private void handleAutoCreateSchedule() {
+        showNotReadyAlert(mainApp.getPrimaryStage());
+        /*for (Day day : mainApp.getSchedule().getDays()) {
+            day.getLectures().clear();
+        }
 
+        for (Group group : mainApp.getSchedule().getActualGroups()) {
+            for (int i = 0; i < group.getLessonsHours().size(); i++) {
+                group.getLessonsHours().set(i, 0);
+            }
+        }
+
+        for (Teacher teacher : mainApp.getSchedule().getActualTeachers()) {
+            for (Lesson lesson : teacher.getLessons()) {
+                lesson.setHours(0);
+            }
+        }
+
+        for (Group group : mainApp.getGroupsData()) {
+            int hoursCount = 0;
+
+            for (Integer lessonHours : group.getLessonsHours()) {
+                hoursCount += lessonHours;
+            }
+
+            int lecturesInDay = hoursCount / 5;
+
+            int lecturesMod = hoursCount % 5;
+
+            for (Day day : mainApp.getSchedule().getDays()) {
+                for (int i = 0; i < lecturesInDay; i++) {
+                    Lecture lecture = new Lecture(i, "", "", "", "");
+
+                    exit:
+                    for (Group actualGroup : mainApp.getSchedule().getActualGroups()) {
+                        if (actualGroup.getName().equals(group.getName())) {
+                            for (int j = 0; j < actualGroup.getLessonsHours().size(); j++) {
+                                if (actualGroup.getLessonsHours().get(j) < group.getLessonsHours().get(j)) {
+                                    actualGroup.getLessonsHours().set(j, actualGroup.getLessonsHours().get(j) + 2);
+                                    lecture.setGroup(group.getName());
+                                    lecture.setLesson(mainApp.getLessonsListData().get(j));
+
+                                    break exit;
+                                }
+                            }
+                        }
+                    }
+
+                    for (Teacher teacher : mainApp.getSchedule().getActualTeachers()) {
+                        for (Lesson lesson : teacher.getLessons()) {
+
+                        }
+                    }
+                }
+            }
+
+            System.out.printf("Группа: %s\nПар в день: %d\n Остаток пар: %d\n", group.getName(), lecturesInDay, lecturesMod);
+        }*/
     }
 }

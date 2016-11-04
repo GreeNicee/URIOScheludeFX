@@ -64,4 +64,14 @@ public class Alerts {
         }
         return false;
     }
+
+    public static void showNotReadyAlert(Window window) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(window);
+        alert.setTitle("Читайте ниже=)");
+        alert.setHeaderText("Данная функция еще не реализована");
+        alert.setContentText("Ждите в будущих обновлениях ^_^");
+
+        alert.showAndWait();
+    }
 }

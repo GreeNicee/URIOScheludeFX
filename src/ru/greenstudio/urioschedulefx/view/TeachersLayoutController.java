@@ -10,7 +10,9 @@ import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.Utils.IsInputOk;
-import ru.greenstudio.urioschedulefx.model.*;
+import ru.greenstudio.urioschedulefx.model.Lecture;
+import ru.greenstudio.urioschedulefx.model.Lesson;
+import ru.greenstudio.urioschedulefx.model.Teacher;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInTeacherData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -151,7 +153,8 @@ public class TeachersLayoutController {
 
             checkActualTeachers(selectedLesson.getName(),
                     mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
-                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp);
 
             mainApp.getTeachersData().get(teacherIndex).getLessons().remove(selectedIndex);
             mainApp.getSchedule().getActualTeachers().get(teacherIndex).getLessons().remove(selectedIndex);
@@ -181,7 +184,8 @@ public class TeachersLayoutController {
 
             checkActualTeachers(selectedLesson.getName(),
                     mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
-                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp);
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         }
@@ -204,7 +208,8 @@ public class TeachersLayoutController {
 
             checkActualTeachers(selectedLesson.getName(),
                     mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
-                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp);
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         }
@@ -227,7 +232,8 @@ public class TeachersLayoutController {
 
                 checkActualTeachers(selectedLesson.getName(),
                         mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
-                        mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+                        mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                        mainApp);
             } else showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "изменить", "предмет");
@@ -249,7 +255,8 @@ public class TeachersLayoutController {
 
             checkActualTeachers(selectedLesson.getName(),
                     mainApp.getTeachersData().get(teachersListView.getSelectionModel().getSelectedIndex()),
-                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()));
+                    mainApp.getSchedule().getActualTeachers().get(teachersListView.getSelectionModel().getSelectedIndex()),
+                    mainApp);
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }
@@ -394,49 +401,4 @@ public class TeachersLayoutController {
             textTeacher.requestFocus();
         }
     }
-
-    private void checkActualTeachers(String lessonName, Teacher maxTeacher, Teacher actualTeacher) {
-        Lesson lessMaxTeacher = new Lesson();
-        Lesson lessActualTeacher = new Lesson();
-        for (Lesson lesson : maxTeacher.getLessons()) {
-            if (lesson.getName().equals(lessonName)) {
-                lessMaxTeacher = lesson;
-                break;
-            }
-        }
-
-        for (Lesson lesson : actualTeacher.getLessons()) {
-            if (lesson.getName().equals(lessonName)) {
-                lessActualTeacher = lesson;
-                break;
-            }
-        }
-
-        exit:
-        for (Day day : mainApp.getSchedule().getDays()) {
-            for (Lecture lecture : day.getLectures()) {
-                if (lessMaxTeacher.getHours() >= lessActualTeacher.getHours())
-                    break exit;
-
-                if (lecture.getTeacher().equals(maxTeacher.getName()) && lecture.getLesson().equals(lessonName)) {
-                    lecture.setTeacher("");
-                    lecture.setLesson("");
-                    lessActualTeacher.setHours(lessActualTeacher.getHours() - 2);
-                    for (Group group : mainApp.getSchedule().getActualGroups()) {
-                        if (group.getName().equals(lecture.getGroup())) {
-                            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
-                                if (mainApp.getLessonsListData().get(i).equals(lessonName)) {
-                                    group.getLessonsHours().set(i,
-                                            group.getLessonsHours().get(i) - 2);
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 }

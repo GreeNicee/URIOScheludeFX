@@ -50,6 +50,6 @@ public class Lesson {
 
     @Override
     public String toString() {
-        return "name=" + name + ", hours=" + hours;
+        return "name=" + name.get() + ", hours=" + hours.get();
     }
 }

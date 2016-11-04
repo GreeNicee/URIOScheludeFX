@@ -9,12 +9,10 @@ import javafx.scene.input.KeyCode;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
+import ru.greenstudio.urioschedulefx.model.Day;
 import ru.greenstudio.urioschedulefx.model.Group;
 import ru.greenstudio.urioschedulefx.model.Lecture;
 import ru.greenstudio.urioschedulefx.model.Lesson;
-import ru.greenstudio.urioschedulefx.model.Teacher;
-
-import java.util.List;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInGroupData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -117,17 +115,23 @@ public class GroupsLayoutController {
         if (selectedLesson != null) {
             if (isTextFieldOk(textLesson)) {
                 Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
-                String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
+                Group actualGroup = mainApp.getSchedule().getActualGroups().get(
+                        groupsListView.getSelectionModel().getSelectedIndex());
+
+                Group maxGroup = mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex());
 
                 int lessonHours = Integer.parseInt(textLesson.getText());
                 Lesson newLesson = new Lesson(selectedLesson.getName(), lessonHours);
                 selectedLesson.setHours(lessonHours);
-                if (oldLesson.getHours() - newLesson.getHours() > 0)
-                    lessonHoursMinus(newLesson, oldLesson, groupName);
 
                 mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                         getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
 
+                if (oldLesson.getHours() - newLesson.getHours() > 0) {
+                    System.out.println("if > 0");
+                    checkGroupLessons(newLesson, oldLesson, maxGroup, actualGroup,
+                            groupsListView.getSelectionModel().getSelectedIndex());
+                }
 
                 lessonTableView.getSelectionModel().clearSelection();
                 textLesson.setText("");
@@ -138,23 +142,102 @@ public class GroupsLayoutController {
         }
     }
 
+    private void checkGroupLessons(Lesson newLesson, Lesson oldLesson, Group maxGroup, Group actualGroup, int lessonNum) {
+        int lessonHours = oldLesson.getHours() - newLesson.getHours();
+        System.out.println(lessonHours);
+
+        while (lessonHours > 0) {
+            System.out.println(actualGroup.getLessonsHours().get(lessonNum) + " > "
+                    + maxGroup.getLessonsHours().get(lessonNum) + lessonHours);
+            exit:
+            //Если у группы были назначены пары
+            if (actualGroup.getLessonsHours().get(lessonNum) > maxGroup.getLessonsHours().get(lessonNum)) {
+                for (Day day : mainApp.getSchedule().getDays()) {
+                    for (Lecture lecture : day.getLectures()) {
+                        if (lecture.getGroup().equals(actualGroup.getName()) && lecture.getLesson().equals(newLesson.getName())) {
+                            for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+                                for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                                    if (lecture.getLesson().equals(mainApp.getTeachersData().get(i).getLessons().get(j).getName()) &&
+                                            lecture.getTeacher().equals(mainApp.getTeachersData().get(i).getName())) {
+                                        System.out.println("if");
+                                        mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
+                                                mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - 2);
+
+                                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).setHours(
+                                                mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours() - 2);
+
+                                        actualGroup.getLessonsHours().set(lessonNum, actualGroup.getLessonsHours().get(lessonNum) - 2);
+
+                                        lessonHours -= 2;
+
+                                        lecture.setTeacher("");
+                                        lecture.setLesson("");
+                                        break exit;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {//Если удалили все назначенные часы - чекаем нужно ли у преподов убирать часы
+                int teachersLessonHours = 0, groupsLessonHours = 0;
+                for (Lesson lesson : getTeachersLessonsData(mainApp)) {
+                    if (lesson.getName().equals(oldLesson.getName()))
+                        teachersLessonHours += lesson.getHours();
+                }
+
+                for (Lesson lesson : getGroupsLessonsData(mainApp)) {
+                    if (lesson.getName().equals(oldLesson.getName()))
+                        groupsLessonHours += lesson.getHours();
+                }
+
+                if (teachersLessonHours == groupsLessonHours + lessonHours) {
+                    //Если удалили не назначенные часы - ищем преподов с неназначенными часами)
+                    for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
+                        for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
+                            if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(oldLesson.getName())) {
+                                if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() >
+                                        mainApp.getSchedule().getActualTeachers().get(i).getLessons().get(j).getHours()) {
+                                    lessonHours -= 2;
+                                    mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
+                                            mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - 2);
+                                    break exit;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    lessonHours -= 2;
+                }
+
+            }
+
+        }
+
+    }
+
     @FXML
     private void handleDeleteLesson() {
         Lesson selectedLesson = lessonTableView.getSelectionModel().getSelectedItem();
 
         if (selectedLesson != null) {
             Lesson oldLesson = new Lesson(selectedLesson.getName(), selectedLesson.getHours());
-            String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
+            Group actualGroup = mainApp.getSchedule().getActualGroups().get(
+                    groupsListView.getSelectionModel().getSelectedIndex());
+
+            Group maxGroup = mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex());
 
             selectedLesson.setHours(0);
             Lesson newLesson = new Lesson(selectedLesson.getName(), 0);
 
-            lessonHoursMinus(newLesson, oldLesson, groupName);
-
             mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
                     getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
-            mainApp.getSchedule().getActualGroups().get(groupsListView.getSelectionModel().getSelectedIndex()).
-                    getLessonsHours().set(lessonTableView.getSelectionModel().getSelectedIndex(), selectedLesson.getHours());
+
+            if (oldLesson.getHours() - newLesson.getHours() > 0) {
+                System.out.println("if > 0");
+                checkGroupLessons(newLesson, oldLesson, maxGroup, actualGroup,
+                        groupsListView.getSelectionModel().getSelectedIndex());
+            }
 
             lessonTableView.getSelectionModel().clearSelection();
             textLesson.setText("");
@@ -162,104 +245,6 @@ public class GroupsLayoutController {
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "\"обнулить\"", "предмет");
         }
-    }
-
-    private void lessonHoursMinus(Lesson newLesson, Lesson oldLesson, String groupName) {
-        int lessonHours = oldLesson.getHours() - newLesson.getHours();
-
-        if (!isActualEmpty(oldLesson.getName(), groupName)) {
-            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
-                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
-                    Lecture lecture = mainApp.getSchedule().getDays().get(i).getLectures().get(j);
-                    if (lessonHours <= 0) {
-                        return;
-                    }
-
-                    if (lecture.getGroup().equals(groupName) && lecture.getLesson().equals(oldLesson.getName())) {
-                        List<Teacher> actualTeachers = mainApp.getSchedule().getActualTeachers();
-                        for (int k = 0; k < actualTeachers.size(); k++) {
-                            boolean boo2 = false;
-                            if (lecture.getTeacher().equals(actualTeachers.get(k).getName())) {
-                                for (int l = 0; l < actualTeachers.get(k).getLessons().size(); l++) {
-                                    if (actualTeachers.get(k).getLessons().get(l).getName().equals(
-                                            lecture.getLesson())) {
-                                        actualTeachers.get(k).getLessons().get(l).setHours(
-                                                actualTeachers.get(k).getLessons().get(l).getHours() - 2);
-                                        mainApp.getTeachersData().get(k).getLessons().get(l).setHours(
-                                                mainApp.getTeachersData().get(k).getLessons().get(l).getHours() - 2);
-                                        lessonHours -= 2;
-                                        boo2 = true;
-                                        break;
-                                    }
-                                }
-                                if (boo2)
-                                    break;
-                            }
-                        }
-
-                        lecture.setLesson("");
-                        lecture.setTeacher("");
-                    }
-                }
-                if (lessonHours <= 0) {
-                    return;
-                }
-            }
-        }
-
-        int allLessHours = 0;
-
-        exit:
-        for (Lesson lessonTeacher : getTeachersLessonsData(mainApp)) {
-            if (lessonTeacher.getName().equals(newLesson.getName())) {
-                for (Lesson lessonGroup : getGroupsLessonsData(mainApp)) {
-                    if (lessonGroup.getName().equals(lessonTeacher.getName())) {
-                        allLessHours = lessonTeacher.getHours() - (lessonGroup.getHours() -
-                                oldLesson.getHours() - newLesson.getHours());
-                        break exit;
-                    }
-                }
-            }
-        }
-
-        if (allLessHours <= 0)
-            return;
-
-        for (int i = 0; i < mainApp.getTeachersData().size(); i++) {
-            for (int j = 0; j < mainApp.getTeachersData().get(i).getLessons().size(); j++) {
-                if (mainApp.getTeachersData().get(i).getLessons().get(j).getName().equals(
-                        lessonTableView.getSelectionModel().getSelectedItem().getName())) {
-                    if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() > 0) {
-                        if (mainApp.getTeachersData().get(i).getLessons().get(j).getHours() >= allLessHours) {
-                            mainApp.getTeachersData().get(i).getLessons().get(j).setHours(
-                                    mainApp.getTeachersData().get(i).getLessons().get(j).getHours() - allLessHours);
-                            allLessHours = 0;
-                        } else {
-                            allLessHours -= mainApp.getTeachersData().get(i).getLessons().get(j).getHours();
-                            mainApp.getTeachersData().get(i).getLessons().get(j).setHours(0);
-                        }
-                    }
-                    break;
-                }
-            }
-            if (allLessHours <= 0)
-                break;
-        }
-    }
-
-    private boolean isActualEmpty(String lessonName, String groupName) {
-        for (int i = 0; i < mainApp.getSchedule().getActualGroups().size(); i++) {
-            if (mainApp.getSchedule().getActualGroups().get(i).getName().equals(groupName)) {
-                for (int j = 0; j < mainApp.getLessonsListData().size(); j++) {
-                    if (mainApp.getLessonsListData().get(j).equals(lessonName)) {
-                        if (mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().get(j) > 0) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     @FXML
@@ -329,7 +314,7 @@ public class GroupsLayoutController {
         }
     }
 
-    @FXML
+    @FXML//TODO
     private void handleDeleteGroup() {
         int selectedIndex = groupsListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {

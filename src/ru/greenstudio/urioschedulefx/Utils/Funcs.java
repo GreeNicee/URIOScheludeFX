@@ -2,9 +2,7 @@ package ru.greenstudio.urioschedulefx.Utils;
 
 import javafx.collections.FXCollections;
 import ru.greenstudio.urioschedulefx.MainApp;
-import ru.greenstudio.urioschedulefx.model.Group;
-import ru.greenstudio.urioschedulefx.model.Lesson;
-import ru.greenstudio.urioschedulefx.model.Teacher;
+import ru.greenstudio.urioschedulefx.model.*;
 
 import java.util.List;
 
@@ -157,6 +155,50 @@ public class Funcs {
                     } else break;
                 } else if (j == teachersLessonsData.size() - 1) {
                     listData.add(aGroupsLessonsData.getName());
+                }
+            }
+        }
+    }
+
+    public static void checkActualTeachers(String lessonName, Teacher maxTeacher, Teacher actualTeacher, MainApp mainApp) {
+        Lesson lessMaxTeacher = new Lesson();
+        Lesson lessActualTeacher = new Lesson();
+        for (Lesson lesson : maxTeacher.getLessons()) {
+            if (lesson.getName().equals(lessonName)) {
+                lessMaxTeacher = lesson;
+                break;
+            }
+        }
+
+        for (Lesson lesson : actualTeacher.getLessons()) {
+            if (lesson.getName().equals(lessonName)) {
+                lessActualTeacher = lesson;
+                break;
+            }
+        }
+
+        exit:
+        for (Day day : mainApp.getSchedule().getDays()) {
+            for (Lecture lecture : day.getLectures()) {
+                if (lessMaxTeacher.getHours() >= lessActualTeacher.getHours())
+                    break exit;
+
+                if (lecture.getTeacher().equals(maxTeacher.getName()) && lecture.getLesson().equals(lessonName)) {
+                    lecture.setTeacher("");
+                    lecture.setLesson("");
+                    lessActualTeacher.setHours(lessActualTeacher.getHours() - 2);
+                    for (Group group : mainApp.getSchedule().getActualGroups()) {
+                        if (group.getName().equals(lecture.getGroup())) {
+                            for (int i = 0; i < mainApp.getLessonsListData().size(); i++) {
+                                if (mainApp.getLessonsListData().get(i).equals(lessonName)) {
+                                    group.getLessonsHours().set(i,
+                                            group.getLessonsHours().get(i) - 2);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         }
