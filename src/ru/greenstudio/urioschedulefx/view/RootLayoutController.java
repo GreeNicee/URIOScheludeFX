@@ -1,8 +1,9 @@
 package ru.greenstudio.urioschedulefx.view;
 
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
+import com.sun.javafx.application.HostServicesDelegate;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Optional;
 
 @SuppressWarnings("ALL")
 public class RootLayoutController {
@@ -38,6 +40,8 @@ public class RootLayoutController {
     private Tab tabGroups;
     @FXML
     private Tab tabLessonsAndCabs;
+    @FXML
+    private Tab tabTimeSchedule;
 
     private String date;
 
@@ -81,19 +85,44 @@ public class RootLayoutController {
 
     @FXML
     private void handleInfoAuthor() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Информация об авторе");
+        alert.setHeaderText("Вы можете со мной связаться с помощью социальной сети Вконтакте.\n" +
+                "Также вы можете связаться со мной на GitHub)");
 
+        ButtonType buttonTypeOne = new ButtonType("GitHub репозиторий");
+        ButtonType buttonTypeTwo = new ButtonType("Вконтакте");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
+
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        String url = "";
+        if (result.get() == buttonTypeOne) {
+            url = "https://github.com/GreeNicee";
+        } else if (result.get() == buttonTypeTwo) {
+            url = "https://vk.com/greenmadnessman";
+        } else {
+            alert.close();
+        }
+
+        if (!url.equals("")) {
+            HostServicesDelegate hostServices = HostServicesFactory.getInstance(mainApp);
+            hostServices.showDocument(url);
+        }
     }
+
 
     @FXML
     private void handleInfoApp() {
 
     }
 
-    private static void createSheetHeader(HSSFSheet sheet, int rowNum, Lecture dataModel, boolean isGroup) {
+    private static void createSheetHeader(HSSFSheet sheet, int rowNum, Lecture dataModel, boolean isGroup, MainApp mainApp) {
         Row row = sheet.createRow(rowNum);
 
         row.createCell(0).setCellValue(dataModel.getNumName());
-        row.createCell(1).setCellValue("Время");
+        row.createCell(1).setCellValue(mainApp.getLecturesData().get(dataModel.getNumName() - 1).getText());
         row.createCell(2).setCellValue(dataModel.getLesson());
         String[] teacherPaths = dataModel.getTeacher().split(" ");
         if (isGroup) {
@@ -199,7 +228,7 @@ public class RootLayoutController {
                 int k = rowNum;
                 for (Lecture dataModel : mainApp.getSchedule().getDays().get(j).getLectures()) {
                     if (dataModel.getGroup().equals(group.getName()))
-                        createSheetHeader(sheet, ++rowNum, dataModel, true);
+                        createSheetHeader(sheet, ++rowNum, dataModel, true, mainApp);
                 }
 
                 if (k == rowNum) {
@@ -266,7 +295,7 @@ public class RootLayoutController {
                 int k = rowNum;
                 for (Lecture dataModel : mainApp.getSchedule().getDays().get(j).getLectures()) {
                     if (dataModel.getTeacher().equals(teacher.getName()))
-                        createSheetHeader(sheet, ++rowNum, dataModel, false);
+                        createSheetHeader(sheet, ++rowNum, dataModel, false, mainApp);
                 }
 
                 if (k == rowNum) {

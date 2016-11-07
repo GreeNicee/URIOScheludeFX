@@ -7,57 +7,41 @@
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.greenstudio.urioschedulefx.view.RootLayoutController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
-           <menus>
-               <Menu mnemonicParsing="false" text="Расписание">
-                   <items>
-                       <Menu mnemonicParsing="false" text="Сохранить в Excel">
-                           <items>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelPrint"
-                                         text="Для аудиторного фонда"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelTeachers"
-                                         text="Для преподавателей"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelGroups"
-                                         text="Для студентов"/>
-                               <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelAll"
-                                         text="Для всех (3 файла)"/>
-                           </items>
-                       </Menu>
-                   </items>
-               </Menu>
-               <Menu mnemonicParsing="false" text="Справка">
-                  <items>
-                      <MenuItem mnemonicParsing="false" onAction="#handleInfoApp" text="О программе"/>
-                      <MenuItem mnemonicParsing="false" onAction="#handleInfoAuthor" text="Об авторе"/>
-                  </items>
-               </Menu>
-               <Menu mnemonicParsing="false" onAction="#handleExit" text="Выход"/>
-           </menus>
+            <Menu mnemonicParsing="false" text="Расписание">
+                <Menu mnemonicParsing="false" text="Сохранить в Excel">
+                    <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelPrint"
+                              text="Для аудиторного фонда"/>
+                    <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelTeachers"
+                              text="Для преподавателей"/>
+                    <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelGroups" text="Для студентов"/>
+                    <MenuItem mnemonicParsing="false" onAction="#handleSaveExcelAll" text="Для всех (3 файла)"/>
+                </Menu>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Справка">
+                <MenuItem mnemonicParsing="false" onAction="#handleInfoApp" text="О программе"/>
+                <MenuItem mnemonicParsing="false" onAction="#handleInfoAuthor" text="Об авторе"/>
+            </Menu>
+            <Menu mnemonicParsing="false" onAction="#handleExit" text="Выход"/>
         </MenuBar>
     </top>
     <center>
-        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-           <tabs>
-               <Tab fx:id="tabSchedule" text="Расписание">
-                  <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-               </Tab>
-               <Tab fx:id="tabTeachers" text="Преподаватели">
-                  <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-               </Tab>
-               <Tab fx:id="tabGroups" text="Группы">
-                  <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-               </Tab>
-               <Tab fx:id="tabLessonsAndCabs" text="Предметы и аудитории">
-                  <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-               </Tab>
-           </tabs>
+        <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE"
+                 BorderPane.alignment="CENTER">
+            <Tab fx:id="tabSchedule" text="Расписание">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab fx:id="tabTeachers" text="Преподаватели">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab fx:id="tabGroups" text="Группы">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab fx:id="tabLessonsAndCabs" text="Предметы и аудитории">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
+            <Tab fx:id="tabTimeSchedule" text="Расписание звонков">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </Tab>
         </TabPane>
     </center>
 </BorderPane>

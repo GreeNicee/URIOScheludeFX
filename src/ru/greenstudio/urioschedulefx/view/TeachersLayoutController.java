@@ -123,6 +123,7 @@ public class TeachersLayoutController {
                     Integer.parseInt(labelLessonHours.getText().substring(labelLessonHours.getText().indexOf(':') + 2)))
                 event.consume();
         });
+        mainApp.setTeacherLessonTableView(this.lessonTableView);
     }
 
     @FXML
@@ -293,6 +294,7 @@ public class TeachersLayoutController {
                 labelLessonHours.setText("MAX: " + maxHours);
             } else labelLessonHours.setText("MAX: ");
             textLessonHours.requestFocus();
+            textLessonHours.positionCaret(textLessonHours.getText().length());
         }
     }
 

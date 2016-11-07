@@ -7,6 +7,7 @@ import javafx.scene.input.KeyCode;
 import ru.greenstudio.urioschedulefx.MainApp;
 import ru.greenstudio.urioschedulefx.model.Day;
 import ru.greenstudio.urioschedulefx.model.Lecture;
+import ru.greenstudio.urioschedulefx.model.Lesson;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInStringData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
@@ -132,6 +133,7 @@ public class LessonsAndCabsController {
                 mainApp.getGroupsData().get(i).getLessonsHours().add(0);
                 mainApp.getSchedule().getActualGroups().get(i).getLessonsHours().add(0);
             }
+            mainApp.getLessonTableView().getItems().add(new Lesson(lesson, 0));
         }
     }
 
@@ -144,6 +146,9 @@ public class LessonsAndCabsController {
                     String lesson = textLesson.getText();
                     String oldLesson = lessonListView.getSelectionModel().getSelectedItem();
                     mainApp.getLessonsListData().set(lessonListView.getSelectionModel().getSelectedIndex(), lesson);
+                    mainApp.getLessonTableView().getItems().set(lessonListView.getSelectionModel().getSelectedIndex(),
+                            new Lesson(lesson, mainApp.getLessonTableView().getItems().
+                                    get(lessonListView.getSelectionModel().getSelectedIndex()).getHours()));
                     lessonListView.getSelectionModel().clearSelection();
                     textLesson.setText("");
                     textLesson.requestFocus();
@@ -206,6 +211,13 @@ public class LessonsAndCabsController {
             }
 
             lessonListView.getItems().remove(selectedIndex);
+            mainApp.getLessonTableView().getItems().remove(selectedIndex);
+            for (int i = 0; i < mainApp.getTeacherLessonTableView().getItems().size(); i++) {
+                if (mainApp.getTeacherLessonTableView().getItems().get(i).getName().equals(selectedItem)) {
+                    mainApp.getTeacherLessonTableView().getItems().remove(i);
+                    break;
+                }
+            }
             lessonListView.getSelectionModel().clearSelection();
             textLesson.setText("");
             textLesson.requestFocus();

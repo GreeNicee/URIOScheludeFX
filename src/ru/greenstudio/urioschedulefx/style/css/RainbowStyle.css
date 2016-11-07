@@ -43,5 +43,17 @@
     -fx-background-color: linear-gradient(to bottom, #aebcbf 0%,#6e7774 50%,#0a0e0a 51%,#0a0809 100%);
     -fx-text-fill: white;
 }
+.label {
+    -fx-text-fill: #119911;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+}
 
+#caption{
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
 
+#sub_caption{
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}

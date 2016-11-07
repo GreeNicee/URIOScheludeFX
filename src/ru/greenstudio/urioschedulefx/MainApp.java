@@ -9,19 +9,51 @@ import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ru.greenstudio.urioschedulefx.Utils.MaskField;
 import ru.greenstudio.urioschedulefx.model.*;
 import ru.greenstudio.urioschedulefx.view.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static ru.greenstudio.urioschedulefx.Utils.IO.Files.*;
 
 public class MainApp extends Application {
+    private ArrayList<MaskField> lecturesData = new ArrayList<>(8);
+
+    public ArrayList<MaskField> getLecturesData() {
+        return lecturesData;
+    }
+
+    public void setLecturesData(ArrayList<MaskField> lecturesData) {
+        this.lecturesData = lecturesData;
+    }
+
+    private TableView<Lesson> lessonTableView;
+
+    public TableView<Lesson> getLessonTableView() {
+        return lessonTableView;
+    }
+
+    public void setLessonTableView(TableView<Lesson> lessonTableView) {
+        this.lessonTableView = lessonTableView;
+    }
+
+    private TableView<Lesson> teacherLessonTableView;
+
+    public TableView<Lesson> getTeacherLessonTableView() {
+        return teacherLessonTableView;
+    }
+
+    public void setTeacherLessonTableView(TableView<Lesson> teacherLessonTableView) {
+        this.teacherLessonTableView = teacherLessonTableView;
+    }
+
     private Stage primaryStage;
     private BorderPane rootLayout;
 
@@ -84,8 +116,8 @@ public class MainApp extends Application {
         loadSchedule(schedule);
     }
 
-    /*private void setTestValues() {
-        // В качестве образца добавляем некоторые данные
+    private void setTestValues() {
+        /*// В качестве образца добавляем некоторые данные
         lessonsListData.add("Вася");
         lessonsListData.add("Володя");
         lessonsListData.add("Режий");
@@ -106,11 +138,11 @@ public class MainApp extends Application {
             }
             Group group = new Group("" + i, lessonsListData, FXCollections.observableArrayList(lessHoursData));
             groupsData.add(group);
-//            System.out.println(group.lessons);
+            System.out.println(group.lessons);
         }
 
-        groupsData.add(new Group("Бизнес-информатика", lessonsListData, lessHoursData));
-    }*/
+        groupsData.add(new Group("Бизнес-информатика", lessonsListData, lessHoursData));*/
+    }
 
     public ObservableList<String> getLessonsListData() {
         return lessonsListData;
@@ -142,12 +174,19 @@ public class MainApp extends Application {
         showTeachers();
 
         showSchedule();
+
+        showTimeSchedule();
     }
 
     @Override
     public void stop() {
         System.out.println("Stage is closing");
         saveDataToFile(lessonsListData, cabsListData, groupsData, teachersData, schedule);
+        List<String> list = new ArrayList<>(8);
+        for (MaskField maskField : lecturesData) {
+            list.add(maskField.getPlainText());
+        }
+        saveLecturesTime(list);
     }
 
     private void initRootLayout() {
@@ -307,36 +346,45 @@ public class MainApp extends Application {
         }
     }
 
+    private void showTimeSchedule() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/TimeScheduleLayout.fxml"));
+            AnchorPane timeSchedule = loader.load();
+
+            for (int i = 0; i < rootLayout.getChildren().size(); i++) {
+                ObservableList<Node> rootChilds = rootLayout.getChildren();
+                if (rootChilds.get(i) instanceof TabPane) {
+                    ObservableList<Tab> rootTabs = ((TabPane) rootChilds.get(i)).getTabs();
+                    for (Tab rootTab : rootTabs) {
+                        String tabId = "";
+                        if (rootTab.getId() != null)
+                            tabId = rootTab.getId();
+                        if (tabId.equals("tabTimeSchedule")) {
+                            AnchorPane anchorPane = (AnchorPane) rootTab.getContent();
+                            anchorPane.getChildren().add(timeSchedule);
+
+                            AnchorPane.setTopAnchor(timeSchedule, 0.0);
+                            AnchorPane.setBottomAnchor(timeSchedule, 0.0);
+                            AnchorPane.setLeftAnchor(timeSchedule, 0.0);
+                            AnchorPane.setRightAnchor(timeSchedule, 0.0);
+                        }
+                    }
+                }
+            }
+            TimeScheduleLayoutController controller = loader.getController();
+            controller.setMainApp(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public void showStatistics() {
-        try {
-            // Загружает fxml-файл и создаёт новую сцену для всплывающего окна.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/StatisticsLayout.fxml"));
-            AnchorPane page = (AnchorPane) loader.load();
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Статистика");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-
-            // Передаёт адресатов в контроллер.
-            StatisticsLayoutController controller = loader.getController();
-            controller.setMainApp(this);
-            controller.setStatData();
-
-            dialogStage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

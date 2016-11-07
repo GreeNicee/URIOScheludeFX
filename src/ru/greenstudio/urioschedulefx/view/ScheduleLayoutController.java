@@ -408,6 +408,16 @@ public class ScheduleLayoutController {
             return;
         }
 
+        if (index >= 9) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.initOwner(mainApp.getPrimaryStage());
+            alert.setTitle("Боюсь, что после 9 пар никто не выживет!");
+            alert.setHeaderText("Проявите сострадание к студентам и преподавателям!");
+            alert.setContentText("Будте милосердны!");
+            alert.showAndWait();
+            return;
+        }
+
         int listIndex = listDays.getSelectionModel().getSelectedIndex();
         if (listIndex < 0) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -486,8 +496,6 @@ public class ScheduleLayoutController {
     @FXML
     private void handleRefreshData() {
         System.out.println(mainApp.getSchedule());
-
-//        mainApp.showStatistics();
     }
 
     @FXML//TODO не доделал

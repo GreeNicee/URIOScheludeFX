@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 import javafx.util.converter.IntegerStringConverter;
 import ru.greenstudio.urioschedulefx.MainApp;
@@ -16,8 +17,7 @@ import ru.greenstudio.urioschedulefx.model.Lesson;
 
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.alreadyInGroupData;
 import static ru.greenstudio.urioschedulefx.Utils.Alerts.showWarningOperation;
-import static ru.greenstudio.urioschedulefx.Utils.Funcs.getGroupsLessonsData;
-import static ru.greenstudio.urioschedulefx.Utils.Funcs.getTeachersLessonsData;
+import static ru.greenstudio.urioschedulefx.Utils.Funcs.*;
 import static ru.greenstudio.urioschedulefx.Utils.IsInputOk.isTextFieldOk;
 
 public class GroupsLayoutController {
@@ -93,6 +93,15 @@ public class GroupsLayoutController {
                 handleEditLesson();
             }
         });
+
+        textLesson.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String character = event.getCharacter();
+
+            if (!checkNumeric(character))
+                event.consume();
+        });
+
+        mainApp.setLessonTableView(this.lessonTableView);
     }
 
     private void showGroupDetails(Group group) {
@@ -144,11 +153,9 @@ public class GroupsLayoutController {
 
     private void checkGroupLessons(Lesson newLesson, Lesson oldLesson, Group maxGroup, Group actualGroup, int lessonNum) {
         int lessonHours = oldLesson.getHours() - newLesson.getHours();
-        System.out.println(lessonHours);
-
         while (lessonHours > 0) {
             System.out.println(actualGroup.getLessonsHours().get(lessonNum) + " > "
-                    + maxGroup.getLessonsHours().get(lessonNum) + lessonHours);
+                    + maxGroup.getLessonsHours().get(lessonNum));
             exit:
             //Если у группы были назначены пары
             if (actualGroup.getLessonsHours().get(lessonNum) > maxGroup.getLessonsHours().get(lessonNum)) {
@@ -314,53 +321,43 @@ public class GroupsLayoutController {
         }
     }
 
-    @FXML//TODO
+    @FXML//TODO ПЕРЕДЕЛАТЬ
     private void handleDeleteGroup() {
         int selectedIndex = groupsListView.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
-            String groupName = groupsListView.getSelectionModel().getSelectedItem().getName();
-            Group selectedGroup = groupsListView.getSelectionModel().getSelectedItem();
-            for (int i = 0; i < selectedGroup.getLessonsHours().size(); i++) {
-                while (selectedGroup.getLessonsHours().get(i) > 0) {
-                    for (int j = 0; j < mainApp.getTeachersData().size(); j++) {
-                        for (int k = 0; k < mainApp.getTeachersData().get(j).getLessons().size(); k++) {
-                            if (mainApp.getTeachersData().get(j).getLessons().get(k).getName().
-                                    equals(mainApp.getLessonsListData().get(i))) {
-                                while (mainApp.getTeachersData().get(j).getLessons().get(k).getHours() > 0 &&
-                                        selectedGroup.getLessonsHours().get(i) > 0) {
-                                    selectedGroup.getLessonsHours().set(i, selectedGroup.getLessonsHours().get(i) - 1);
-                                    mainApp.getTeachersData().get(j).getLessons().get(k).setHours(
-                                            mainApp.getTeachersData().get(j).getLessons().get(k).getHours() - 1);
-                                }
-                            }
-                        }
-                    }
+            Group actualGroup = mainApp.getSchedule().getActualGroups().get(
+                    groupsListView.getSelectionModel().getSelectedIndex());
+            Group maxGroup = mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex());
+
+            String groupName = maxGroup.getName();
+
+            for (int i = 0; i < maxGroup.getLessonsHours().size(); i++) {
+                Lesson oldLesson = new Lesson(mainApp.getLessonsListData().get(i),
+                        maxGroup.getLessonsHours().get(i));
+
+                mainApp.getGroupsData().get(groupsListView.getSelectionModel().getSelectedIndex()).
+                        getLessonsHours().set(i, 0);
+                Lesson newLesson = new Lesson(mainApp.getLessonsListData().get(i), 0);
+
+                if (oldLesson.getHours() - newLesson.getHours() > 0) {
+                    checkGroupLessons(newLesson, oldLesson, maxGroup, actualGroup, i);
                 }
             }
 
-
-            for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
-                for (int j = 0; j < mainApp.getSchedule().getDays().get(i).getLectures().size(); j++) {
-                    if (mainApp.getSchedule().getDays().get(i).getLectures().get(j).getGroup().equals(groupName)) {
-                        for (int k = 0; k < mainApp.getSchedule().getActualTeachers().size(); k++) {
-                            for (int l = 0; l < mainApp.getSchedule().getActualTeachers().get(k).getLessons().size(); l++) {
-                                if (mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).getName().equals(
-                                        mainApp.getSchedule().getDays().get(i).getLectures().get(j).getLesson())) {
-                                    mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).setHours(
-                                            mainApp.getSchedule().getActualTeachers().get(k).getLessons().get(l).getHours() - 2);
-                                }
-                            }
-                        }
-                        mainApp.getSchedule().getDays().get(i).getLectures().remove(j);
-                        --j;
-                    }
-                }
-            }
             groupsListView.getItems().remove(selectedIndex);
             mainApp.getSchedule().getActualGroups().remove(selectedIndex);
             groupsListView.getSelectionModel().clearSelection();
             textGroup.setText("");
             textGroup.requestFocus();
+
+            for (Day day : mainApp.getSchedule().getDays()) {
+                for (int i = 0; i < day.getLectures().size(); i++) {
+                    if (day.getLectures().get(i).getGroup().equals(groupName)) {
+                        day.getLectures().remove(i);
+                        --i;
+                    }
+                }
+            }
 
         } else {
             showWarningOperation(mainApp.getPrimaryStage(), "удалить", "группу");

@@ -3,6 +3,7 @@ package ru.greenstudio.urioschedulefx.Utils.IO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import ru.greenstudio.urioschedulefx.Utils.MaskField;
 import ru.greenstudio.urioschedulefx.model.Day;
 import ru.greenstudio.urioschedulefx.model.Group;
 import ru.greenstudio.urioschedulefx.model.Schedule;
@@ -14,10 +15,11 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Files {
     private static final String path = "data";
-    private static final String[] files = {"cabs", "lessons", "groups", "teachers", "schedule"};
+    private static final String[] files = {"cabs", "lessons", "groups", "teachers", "schedule", "lecturestime"};
     private static final String format = ".xml";
 
     private static void checkFiles() {
@@ -196,6 +198,42 @@ public class Files {
             }
         } catch (JAXBException e) {
             System.out.println(e + "\n SCHEDULE");
+        }
+    }
+
+    public static void saveLecturesTime(List<String> lecturesData) {
+        JAXBContext context = null;
+        try {
+            context = JAXBContext.newInstance(TimeScheduleWrapper.class);
+
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            TimeScheduleWrapper timeScheduleWrapper = new TimeScheduleWrapper();
+            timeScheduleWrapper.setLecturesTime(lecturesData);
+
+            File file = new File("data/" + files[5] + ".xml");
+
+            m.marshal(timeScheduleWrapper, file);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadLecturesTime(List<MaskField> lecturesData) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(TimeScheduleWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
+
+            File file = new File("data/" + files[5] + ".xml");
+
+            TimeScheduleWrapper timeScheduleWrapper = (TimeScheduleWrapper) um.unmarshal(file);
+
+            for (int i = 0; i < lecturesData.size(); i++) {
+                lecturesData.get(i).setPlainText(timeScheduleWrapper.getLecturesTimes().get(i));
+            }
+        } catch (Exception e) {
+            System.out.println(e + "\n TIMESCHEDULE");
         }
     }
 

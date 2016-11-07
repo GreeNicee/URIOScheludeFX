@@ -83,7 +83,7 @@
                                         </Button>
                                         <Label text="Предмет"/>
                                         <ComboBox fx:id="comboLessons" onAction="#handleComboLessonsClick"
-                                                  prefHeight="31.0" prefWidth="306.0">
+                                                  prefHeight="31.0" prefWidth="295.0">
                                             <cursor>
                                                 <Cursor fx:constant="HAND"/>
                                             </cursor>
