@@ -9,7 +9,7 @@ import java.util.List;
 @XmlRootElement(name = "lecturesTime")
 public class TimeScheduleWrapper {
 
-    List<String> lecturesData = new SaveableList();
+    private List<String> lecturesData = new SaveableList();
 
     @XmlElement(name = "lectureTime")
     public List<String> getLecturesTimes() {

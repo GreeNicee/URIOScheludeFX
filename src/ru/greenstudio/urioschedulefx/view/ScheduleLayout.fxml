@@ -5,15 +5,14 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0"
             prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ru.greenstudio.urioschedulefx.view.ScheduleLayoutController">
     <children>
         <ToolBar layoutX="139.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0"
                  AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <items>
-                <Button id="add" mnemonicParsing="false" onAction="#handleAutoCreateSchedule"
-                        text="Составить автоматически"/>
+                <Button id="del" mnemonicParsing="false" onAction="#handleClearSchedule" text="Очистить расписание"/>
                 <Button id="edit" mnemonicParsing="false" onAction="#handleRefreshData" text="Статистика"/>
             </items>
         </ToolBar>

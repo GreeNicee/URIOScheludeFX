@@ -6,10 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -20,10 +17,21 @@ import ru.greenstudio.urioschedulefx.view.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.greenstudio.urioschedulefx.Utils.IO.Files.*;
 
 public class MainApp extends Application {
+    private ChoiceBox<String> comboGroups;
+
+    public ChoiceBox<String> getComboGroups() {
+        return comboGroups;
+    }
+
+    public void setComboGroups(ChoiceBox<String> comboGroups) {
+        this.comboGroups = comboGroups;
+    }
+
     private ArrayList<MaskField> lecturesData = new ArrayList<>(8);
 
     public ArrayList<MaskField> getLecturesData() {
@@ -77,7 +85,7 @@ public class MainApp extends Application {
         groupsData.setAll(new Group("LOL",
                 FXCollections.observableArrayList("lol", "lol"),
                 FXCollections.observableArrayList(0, 0)));
-        Teacher teacher = new Teacher("писька", new ArrayList<>());
+        Teacher teacher = new Teacher("df", new ArrayList<>());
         teacher.getLessons().add(0, new Lesson("asd", 12));
         teacher.getLessons().add(0, new Lesson("dsa", 0));
 
@@ -88,16 +96,7 @@ public class MainApp extends Application {
         groupsData.clear();
         teachersData.clear();
 
-//        setTestValues();
-
         loadDataFromFile(lessonsListData, cabsListData, groupsData, teachersData);
-
-
-//        for (int i = 0; i < teachersData.size(); i++) {
-//            if (teachersData.get(i).getLessons() == null) {
-//                teachersData.get(i)., new Teacher(teachersData.get(i).getName(), FXCollections.observableArrayList()));
-//            }
-//        }TODO
 
         schedule = new Schedule("Тестовое расписание", FXCollections.observableArrayList());
         schedule.getDays().add(new Day("Понедельник", new ArrayList<>()));
@@ -114,34 +113,6 @@ public class MainApp extends Application {
         schedule.setActualTeachers(FXCollections.observableArrayList());
 
         loadSchedule(schedule);
-    }
-
-    private void setTestValues() {
-        /*// В качестве образца добавляем некоторые данные
-        lessonsListData.add("Вася");
-        lessonsListData.add("Володя");
-        lessonsListData.add("Режий");
-        lessonsListData.add("Валера");
-
-        cabsListData.add("Валера");
-        cabsListData.add("Эмили");
-        cabsListData.add("Джон");
-        cabsListData.add("Бъерн");
-
-        Random random = new Random();
-        ObservableList<Integer> lessHoursData = FXCollections.observableArrayList();
-        for (int i = 0; i < 3; i++) {
-            lessHoursData.clear();
-            for (int j = 0; j < lessonsListData.size(); j++) {
-                int rand = random.nextInt(100);
-                lessHoursData.add(rand);
-            }
-            Group group = new Group("" + i, lessonsListData, FXCollections.observableArrayList(lessHoursData));
-            groupsData.add(group);
-            System.out.println(group.lessons);
-        }
-
-        groupsData.add(new Group("Бизнес-информатика", lessonsListData, lessHoursData));*/
     }
 
     public ObservableList<String> getLessonsListData() {
@@ -162,6 +133,7 @@ public class MainApp extends Application {
 
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        this.primaryStage.setMaximized(true);
         this.primaryStage.setTitle("УРИО - составление расписания");
 //            this.primaryStage.getIcons().add(new Image("file:resources/images/adress_book.png"));
 
@@ -183,9 +155,7 @@ public class MainApp extends Application {
         System.out.println("Stage is closing");
         saveDataToFile(lessonsListData, cabsListData, groupsData, teachersData, schedule);
         List<String> list = new ArrayList<>(8);
-        for (MaskField maskField : lecturesData) {
-            list.add(maskField.getPlainText());
-        }
+        list.addAll(lecturesData.stream().map(MaskField::getPlainText).collect(Collectors.toList()));
         saveLecturesTime(list);
     }
 

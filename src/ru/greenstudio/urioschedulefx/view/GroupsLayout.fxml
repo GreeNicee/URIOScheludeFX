@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
-
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.greenstudio.urioschedulefx.view.GroupsLayoutController">
+<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+           prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="ru.greenstudio.urioschedulefx.view.GroupsLayoutController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
             <ToolBar prefHeight="40.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                  <TextField fx:id="textGroup" promptText="Наименование" />
+                  <TextField fx:id="textGroup" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                             promptText="Наименование группы"/>
                 <Button fx:id="add" mnemonicParsing="false" onAction="#handleAddGroup" text="Добавить">
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -25,6 +25,8 @@
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
+                  <Button id="del" mnemonicParsing="false" onAction="#handleClearGroups"
+                          text="Обнулить предметы групп"/>
               </items>
             </ToolBar>
             <ListView fx:id="groupsListView" layoutX="37.0" layoutY="189.0" onMouseClicked="#handleClickListViewGroups" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0" />
@@ -52,6 +54,8 @@
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
+                  <Button id="del" mnemonicParsing="false" onAction="#handleDeleteAllLessons"
+                          text="Обнулить все предметы"/>
               </items>
             </ToolBar>
          </children>

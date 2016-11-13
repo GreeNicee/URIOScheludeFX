@@ -174,6 +174,15 @@ public class TeachersLayoutController {
 
         if (selectedLesson != null) {
             int lessonHours = Integer.parseInt(labelLessonHours.getText().substring(5));
+            if (lessonHours % 2 != 0) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.initOwner(mainApp.getPrimaryStage());
+                alert.setTitle("Количество часов должно быть четным!");
+                alert.setHeaderText("Одна пара - это два академических часа");
+                alert.setContentText("Нельзя ввесьти нечетное количесво часов");
+                alert.show();
+                return;
+            }
             selectedLesson.setHours(lessonHours);
 
             System.out.println(selectedLesson);
@@ -198,6 +207,15 @@ public class TeachersLayoutController {
 
         if (selectedLesson != null) {
             int lessonHours = Integer.parseInt(labelLessonHours.getText().substring(5)) / 2;
+            if (lessonHours % 2 != 0) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.initOwner(mainApp.getPrimaryStage());
+                alert.setTitle("Количество часов должно быть четным!");
+                alert.setHeaderText("Одна пара - это два академических часа");
+                alert.setContentText("Нельзя ввесьти нечетное количесво часов");
+                alert.show();
+                return;
+            }
             selectedLesson.setHours(lessonHours);
 
             System.out.println(selectedLesson);
@@ -222,6 +240,16 @@ public class TeachersLayoutController {
 
         if (selectedLesson != null) {
             if (isTextFieldOk(textLessonHours, IsInputOk.TextFieldType.NUMERIC)) {
+                if (Integer.parseInt(textLessonHours.getText()) % 2 != 0) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.initOwner(mainApp.getPrimaryStage());
+                    alert.setTitle("Количество часов должно быть четным!");
+                    alert.setHeaderText("Измените количество часов.");
+                    alert.setContentText("Введите корректное значение");
+
+                    alert.show();
+                    return;
+                }
                 int lessonHours = Integer.parseInt(textLessonHours.getText());
                 selectedLesson.setHours(lessonHours);
 

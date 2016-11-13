@@ -17,6 +17,7 @@ public class Alerts {
         alert.showAndWait();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean alreadyInStringData(ObservableList<String> data, String name,Window window,String title) {
         for (String aData : data) {
             if (aData.equals(name)) {
@@ -33,6 +34,7 @@ public class Alerts {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean alreadyInGroupData(ObservableList<Group> data, String name, Window window, String title) {
         for (Group aData : data) {
             if (aData.getName().equals(name)) {
@@ -49,6 +51,7 @@ public class Alerts {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean alreadyInTeacherData(ObservableList<Teacher> data, String name, Window window, String title) {
         for (Teacher aData : data) {
             if (aData.getName().equals(name)) {

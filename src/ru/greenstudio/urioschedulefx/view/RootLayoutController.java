@@ -2,6 +2,8 @@ package ru.greenstudio.urioschedulefx.view;
 
 import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import com.sun.javafx.application.HostServicesDelegate;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
@@ -23,8 +25,7 @@ import ru.greenstudio.urioschedulefx.model.Teacher;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("ALL")
 public class RootLayoutController {
@@ -47,75 +48,7 @@ public class RootLayoutController {
 
     private String[] dates = new String[7];
 
-    @FXML
-    private void initialize() {
-    }
-
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
-
-        Calendar dateForExcelWord = Calendar.getInstance();
-        int diff = Calendar.MONDAY - dateForExcelWord.get(Calendar.DAY_OF_WEEK);
-        if (!(diff > 0)) {
-            diff += 7;
-        }
-        dateForExcelWord.add(Calendar.DAY_OF_MONTH, diff);
-
-        date = String.format("%02d.%02d.%4d", dateForExcelWord.get(
-                Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
-
-        for (int i = 0; i < dates.length; i++) {
-            dates[i] = String.format("%02d.%02d.%4d", dateForExcelWord.get(
-                    Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
-            dateForExcelWord.add(Calendar.DAY_OF_MONTH, 1);
-        }
-
-        dateForExcelWord.add(Calendar.DAY_OF_MONTH, -1);
-
-        date += " - " + String.format("%02d.%02d.%4d", dateForExcelWord.get(
-                Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
-    }
-
     public RootLayoutController() {
-    }
-
-    @FXML
-    private void handleExit() {
-    }
-
-    @FXML
-    private void handleInfoAuthor() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Информация об авторе");
-        alert.setHeaderText("Вы можете со мной связаться с помощью социальной сети Вконтакте.\n" +
-                "Также вы можете связаться со мной на GitHub)");
-
-        ButtonType buttonTypeOne = new ButtonType("GitHub репозиторий");
-        ButtonType buttonTypeTwo = new ButtonType("Вконтакте");
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
-
-        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        String url = "";
-        if (result.get() == buttonTypeOne) {
-            url = "https://github.com/GreeNicee";
-        } else if (result.get() == buttonTypeTwo) {
-            url = "https://vk.com/greenmadnessman";
-        } else {
-            alert.close();
-        }
-
-        if (!url.equals("")) {
-            HostServicesDelegate hostServices = HostServicesFactory.getInstance(mainApp);
-            hostServices.showDocument(url);
-        }
-    }
-
-
-    @FXML
-    private void handleInfoApp() {
-
     }
 
     private static void createSheetHeader(HSSFSheet sheet, int rowNum, Lecture dataModel, boolean isGroup, MainApp mainApp) {
@@ -156,6 +89,100 @@ public class RootLayoutController {
         }
     }
 
+    @FXML
+    private void initialize() {
+    }
+
+    public void setMainApp(MainApp mainApp) {
+        this.mainApp = mainApp;
+
+        Calendar dateForExcelWord = Calendar.getInstance();
+        int diff = Calendar.MONDAY - dateForExcelWord.get(Calendar.DAY_OF_WEEK);
+        if (!(diff > 0)) {
+            diff += 7;
+        }
+        dateForExcelWord.add(Calendar.DAY_OF_MONTH, diff);
+
+        date = String.format("%02d.%02d.%4d", dateForExcelWord.get(
+                Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
+
+        for (int i = 0; i < dates.length; i++) {
+            dates[i] = String.format("%02d.%02d.%4d", dateForExcelWord.get(
+                    Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
+            dateForExcelWord.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
+        dateForExcelWord.add(Calendar.DAY_OF_MONTH, -1);
+
+        date += " - " + String.format("%02d.%02d.%4d", dateForExcelWord.get(
+                Calendar.DAY_OF_MONTH), dateForExcelWord.get(Calendar.MONTH) + 1, dateForExcelWord.get(Calendar.YEAR));
+    }
+
+    @FXML
+    private void handleExit() {
+        mainApp.getPrimaryStage().close();
+    }
+
+    @FXML
+    private void handleInfoAuthor() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Информация об авторе");
+        alert.setHeaderText("Вы можете со мной связаться с помощью социальной сети Вконтакте.\n" +
+                "Также вы можете связаться со мной на GitHub)");
+
+        ButtonType buttonTypeOne = new ButtonType("GitHub репозиторий");
+        ButtonType buttonTypeTwo = new ButtonType("Вконтакте");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.FINISH);
+
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        String url = "";
+        if (result.get() == buttonTypeOne) {
+            url = "https://github.com/GreeNicee";
+        } else if (result.get() == buttonTypeTwo) {
+            url = "https://vk.com/greenmadnessman";
+        } else {
+            alert.close();
+        }
+
+        if (!url.equals("")) {
+            HostServicesDelegate hostServices = HostServicesFactory.getInstance(mainApp);
+            hostServices.showDocument(url);
+        }
+    }
+
+    @FXML
+    private void handleInfoApp() {
+
+//        WebView webview = new WebView();
+//        String content = "<html>\n" +
+//                "<head>\n" +
+//                "\n" +
+//                "</head>\n" +
+//                "<body>\n" +
+//                "<h2>Test page for <b>URIOScheduleFX</b></h2>\n" +
+//                "</body>\n" +
+//                "\n" +
+//                "<!-- Applet will be inserted here -->\n" +
+//                "<div id='javafx-app-placeholder'></div>\n" +
+//                "</html>\n";
+//
+//        webview.getEngine().loadContent(content.toString());
+//        AnchorPane root = new AnchorPane();
+//        root.getChildren().add(webview);
+//
+//        AnchorPane.setTopAnchor(webview, 0.0);
+//        AnchorPane.setBottomAnchor(webview, 0.0);
+//        AnchorPane.setLeftAnchor(webview, 0.0);
+//        AnchorPane.setRightAnchor(webview, 0.0);
+//
+//        Stage stage = new Stage();
+//        stage.setTitle("О программе \"Урио составление расписания\"");
+//        stage.setScene(new Scene(root, 500, 500));
+//        stage.showAndWait();
+    }
+
     private void setColumnStyle(Row row, Short color, boolean isMerged) {
         HSSFWorkbook workbook = (HSSFWorkbook) row.getSheet().getWorkbook();
 
@@ -191,6 +218,86 @@ public class RootLayoutController {
 
     @FXML
     private void handleSaveExcelGroups() {
+        HSSFWorkbook workbook = generateExcelGroups();
+
+        // записываем созданный в памяти Excel документ в файл
+        File file = new File(selectDirectory().getAbsoluteFile() + "/Расписание для групп " + date + ".xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Excel файл успешно создан!");
+    }
+
+    @FXML
+    private void handleSaveExcelTeachers() {
+        HSSFWorkbook workbook = generateExcelTeachers();
+
+        // записываем созданный в памяти Excel документ в файл
+        File file = new File(selectDirectory().getAbsoluteFile() + "/Расписание для преподавателей " + date + ".xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Excel файл успешно создан!");
+    }
+
+    @FXML
+    private void handleSaveExcelPrint() {
+        HSSFWorkbook workbook = generateExcelPrint();
+
+        // записываем созданный в памяти Excel документ в файл
+        File file = new File(selectDirectory().getAbsoluteFile() + "/Расписание для аудиторного фонда " + date + ".xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Excel файл успешно создан!");
+    }
+
+    @FXML
+    private void handleSaveExcelAll() {
+        File path = new File(selectDirectory().getAbsoluteFile() + "/расписание " + date);
+        path.mkdir();
+        HSSFWorkbook workbook = generateExcelPrint();
+
+        // записываем созданный в памяти Excel документ в файл
+        File file = new File(path + "/Расписание для аудиторного фонда.xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        workbook = generateExcelGroups();
+
+        // записываем созданный в памяти Excel документ в файл
+        file = new File(path + "/Расписание для студентов.xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        workbook = generateExcelTeachers();
+
+        // записываем созданный в памяти Excel документ в файл
+        file = new File(path + "/Расписание для преподавателей.xls");
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            workbook.write(out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private HSSFWorkbook generateExcelGroups() {
         // создание самого excel файла в памяти
         HSSFWorkbook workbook = new HSSFWorkbook();
         // создание листа с названием "Просто лист"
@@ -245,26 +352,22 @@ public class RootLayoutController {
                 ++rowNum;
             }
         }
-        // записываем созданный в памяти Excel документ в файл
-        File file = new File(selectDirectory().getAbsoluteFile() + "/Расписание для групп " + date + ".xls");
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            workbook.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Excel файл успешно создан!");
+        return workbook;
     }
 
-    @FXML
-    private void handleSaveExcelTeachers() {
+    private HSSFWorkbook generateExcelTeachers() {
         // создание самого excel файла в памяти
         HSSFWorkbook workbook = new HSSFWorkbook();
         // создание листа с названием "Просто лист"
         for (int i = 0; i < mainApp.getSchedule().getActualTeachers().size(); i++) {
             Teacher teacher = mainApp.getSchedule().getActualTeachers().get(i);
 
-            HSSFSheet sheet = workbook.createSheet(teacher.getName());
+            String[] teacherPaths = teacher.getName().split(" ");
+            String teacherName = teacherPaths[0] + " ";
+            for (int j = 1; j < teacherPaths.length; j++) {
+                teacherName += teacherPaths[j].substring(0, 1) + ".";
+            }
+            HSSFSheet sheet = workbook.createSheet(teacherName);
 
             // счетчик для строк
             int rowNum = 0;
@@ -312,25 +415,101 @@ public class RootLayoutController {
                 ++rowNum;
             }
         }
-        // записываем созданный в памяти Excel документ в файл
-        File file = new File(selectDirectory().getAbsoluteFile() + "/Расписание для преподавателей " + date + ".xls");
-        try (FileOutputStream out = new FileOutputStream(file)) {
-            workbook.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
+        return workbook;
+    }
+
+    private HSSFWorkbook generateExcelPrint() {
+        // создание самого excel файла в памяти
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        // создание листа с названием "Просто лист"
+        for (int i = 0; i < mainApp.getSchedule().getDays().size(); i++) {
+            Day day = mainApp.getSchedule().getDays().get(i);
+
+            HSSFSheet sheet = workbook.createSheet(day.getName());
+
+            Set<String> groupsWithLectures = new LinkedHashSet<>();
+            for (Lecture lecture : day.getLectures()) {
+                groupsWithLectures.add(lecture.getGroup());
+            }
+            //Длина заголовков "Номер пары" и "Время"
+            sheet.setColumnWidth(0, 11 * 256);
+            sheet.setColumnWidth(1, 7 * 256);
+
+            int k = 2;
+            for (String groupsWithLecture : groupsWithLectures) {
+                sheet.setColumnWidth(k, (groupsWithLecture.length() + 2) * 256);
+                ++k;
+            }
+
+            // счетчик для строк
+            int rowNum = 0;
+
+            SortedList<Lecture> sortedLectures = new SortedList((ObservableList) day.getLectures(), new Comparator<Lecture>() {
+                @Override
+                public int compare(Lecture a, Lecture b) {
+                    return a.getNumName() - b.getNumName();
+                }
+            });
+
+            ArrayList<ArrayList<Lecture>> lectures = new ArrayList<>();
+            for (int j = 0; j < sortedLectures.size(); j++) {
+                k = sortedLectures.get(j).getNumName();
+                if (lectures.size() < k)
+                    lectures.add(new ArrayList<Lecture>());
+                lectures.get(k - 1).add(sortedLectures.get(j));
+            }
+
+            // создаем подписи к столбцам (это будет первая строчка в листе Excel файла)
+            Row row = sheet.createRow(rowNum);
+
+            row.createCell(0).setCellValue("№ пары");
+            row.createCell(1).setCellValue("Время");
+
+            Object[] arrLectures = groupsWithLectures.toArray();
+
+            for (int j = 0; j < arrLectures.length; j++) {
+                row.createCell(j + 2).setCellValue(arrLectures[j].toString());
+            }
+
+            setColumnStyle(row, HSSFColor.LIME.index, false);
+            ++rowNum;
+
+            for (ArrayList<Lecture> lecturesI : lectures) {
+                row = sheet.createRow(rowNum);
+
+                row.createCell(0).setCellValue(lecturesI.get(0).getNumName());
+                row.createCell(1).setCellValue(mainApp.getLecturesData().get(lecturesI.get(0).getNumName() - 1).getText());
+                k = 2;
+                for (Lecture lecturesJ : lecturesI) {
+                    while (!lecturesJ.getGroup().equals(sheet.getRow(0).getCell(k).toString())) {
+                        row.createCell(k).setCellValue("");
+                        ++k;
+                    }
+                    row.createCell(k).setCellValue(lecturesJ.getLesson() + " " + lecturesJ.getCab());
+                    ++k;
+                }
+                ++rowNum;
+
+                HSSFCellStyle style = workbook.createCellStyle();
+                style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+                style.setAlignment(HorizontalAlignment.CENTER);
+                style.setFillForegroundColor(HSSFColor.GOLD.index);
+                style.setBorderBottom(CellStyle.BORDER_THIN);
+                style.setBottomBorderColor(HSSFColor.BLACK.index);
+                style.setBorderLeft(CellStyle.BORDER_THIN);
+                style.setLeftBorderColor(HSSFColor.BLACK.index);
+                style.setBorderRight(CellStyle.BORDER_THIN);
+                style.setRightBorderColor(HSSFColor.BLACK.index);
+                style.setBorderTop(CellStyle.BORDER_THIN);
+                style.setTopBorderColor(HSSFColor.BLACK.index);
+
+                // проходим по всем ячейкам этой строки
+                for (int j = 0; j < row.getPhysicalNumberOfCells(); j++) {
+                    row.getCell(j).setCellStyle(style);
+                }
+            }
         }
-
-        System.out.println("Excel файл успешно создан!");
-    }
-
-    @FXML
-    private void handleSaveExcelPrint() {
-
-    }
-
-    @FXML
-    private void handleSaveExcelAll() {
-
+        return workbook;
     }
 
     private File selectDirectory() {

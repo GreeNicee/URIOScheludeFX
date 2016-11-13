@@ -6,16 +6,16 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "schedule")
-public class ScheduleWrapper {
+class ScheduleWrapper {
 
-    Schedule schedule;
+    private Schedule schedule;
 
     @XmlElement(name = "schedule")
-    public Schedule getSchedule() {
+    Schedule getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(Schedule schedule) {
+    void setSchedule(Schedule schedule) {
         this.schedule = schedule;
     }
 }

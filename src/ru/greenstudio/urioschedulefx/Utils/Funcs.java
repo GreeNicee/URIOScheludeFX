@@ -7,6 +7,7 @@ import ru.greenstudio.urioschedulefx.model.*;
 import java.util.List;
 
 public class Funcs {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean checkNumeric(String value) {
         String number = value.replaceAll("\\s+", "");
         for (int i = 0; i < number.length(); i++) {

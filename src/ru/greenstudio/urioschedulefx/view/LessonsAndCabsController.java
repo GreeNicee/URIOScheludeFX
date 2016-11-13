@@ -211,7 +211,7 @@ public class LessonsAndCabsController {
             }
 
             lessonListView.getItems().remove(selectedIndex);
-            mainApp.getLessonTableView().getItems().remove(selectedIndex);
+//            mainApp.getLessonTableView().getItems().remove(selectedIndex);
             for (int i = 0; i < mainApp.getTeacherLessonTableView().getItems().size(); i++) {
                 if (mainApp.getTeacherLessonTableView().getItems().get(i).getName().equals(selectedItem)) {
                     mainApp.getTeacherLessonTableView().getItems().remove(i);

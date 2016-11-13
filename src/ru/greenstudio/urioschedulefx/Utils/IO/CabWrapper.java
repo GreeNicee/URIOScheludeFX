@@ -5,16 +5,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement(name = "cabs")
-public class CabWrapper {
+class CabWrapper {
 
     private List<String> cabs;
 
     @XmlElement(name = "cabs")
-    public List<String> getCabs() {
+    List<String> getCabs() {
         return cabs;
     }
 
-    public void setCabs(List<String> cabs) {
+    void setCabs(List<String> cabs) {
         this.cabs = cabs;
     }
 }

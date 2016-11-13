@@ -14,24 +14,7 @@ public class TimeScheduleLayoutController {
     @FXML
     private GridPane grid;
 
-    ArrayList<MaskField> lecturesData = new ArrayList<>(8);
-
-    @FXML
-    private MaskField firstLecture;
-    @FXML
-    private MaskField secondLecture;
-    @FXML
-    private MaskField thirdLecture;
-    @FXML
-    private MaskField fourthLecture;
-    @FXML
-    private MaskField fifthLecture;
-    @FXML
-    private MaskField sixthLecture;
-    @FXML
-    private MaskField seventhLecture;
-    @FXML
-    private MaskField eighthLecture;
+    private ArrayList<MaskField> lecturesData = new ArrayList<>(8);
 
     public TimeScheduleLayoutController() {
     }
@@ -39,42 +22,42 @@ public class TimeScheduleLayoutController {
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
 
-        firstLecture = new MaskField();
+        MaskField firstLecture = new MaskField();
         firstLecture.setMask("DD:DD");
         firstLecture.setPlainText("0900");
         grid.add(firstLecture, 1, 1);
 
-        secondLecture = new MaskField();
+        MaskField secondLecture = new MaskField();
         secondLecture.setMask("DD:DD");
         secondLecture.setPlainText("1040");
         grid.add(secondLecture, 1, 2);
 
-        thirdLecture = new MaskField();
+        MaskField thirdLecture = new MaskField();
         thirdLecture.setMask("DD:DD");
         thirdLecture.setPlainText("1250");
         grid.add(thirdLecture, 1, 3);
 
-        fourthLecture = new MaskField();
+        MaskField fourthLecture = new MaskField();
         fourthLecture.setMask("DD:DD");
         fourthLecture.setPlainText("1430");
         grid.add(fourthLecture, 1, 4);
 
-        fifthLecture = new MaskField();
+        MaskField fifthLecture = new MaskField();
         fifthLecture.setMask("DD:DD");
         fifthLecture.setPlainText("1610");
         grid.add(fifthLecture, 1, 5);
 
-        sixthLecture = new MaskField();
+        MaskField sixthLecture = new MaskField();
         sixthLecture.setMask("DD:DD");
         sixthLecture.setPlainText("1745");
         grid.add(sixthLecture, 1, 6);
 
-        seventhLecture = new MaskField();
+        MaskField seventhLecture = new MaskField();
         seventhLecture.setMask("DD:DD");
         seventhLecture.setPlainText("1920");
         grid.add(seventhLecture, 1, 7);
 
-        eighthLecture = new MaskField();
+        MaskField eighthLecture = new MaskField();
         eighthLecture.setMask("DD:DD");
         eighthLecture.setPlainText("2055");
         grid.add(eighthLecture, 1, 8);

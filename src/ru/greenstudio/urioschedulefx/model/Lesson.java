@@ -13,12 +13,6 @@ public class Lesson {
         this("", 0);
     }
 
-    /**
-     * Конструктор с некоторыми начальными данными.
-     *
-     * @param name
-     * @param hours
-     */
     public Lesson(String name, int hours) {
         this.name = new SimpleStringProperty(name);
         this.hours = new SimpleIntegerProperty(hours);
@@ -32,8 +26,8 @@ public class Lesson {
         return name;
     }
 
-    public void setName(String name){
-            this.name.set(name);
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     public int getHours() {
